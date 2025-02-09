@@ -9,6 +9,7 @@ import { StandardResponseInterceptor } from './common/response-transaformation.i
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import mongoose from 'mongoose';
+import { StreetNosheryRequestInterceptor } from './common/decryption.interseptor';
 
 function formatErrorText(err: any): string {
   let errText = 'Uncaught Exception';
@@ -29,6 +30,7 @@ async function bootstrap() {
   app.use(httpContext.middleware);
   app.use(setContext);
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalInterceptors(new StreetNosheryRequestInterceptor());
   app.useGlobalInterceptors(new StandardResponseInterceptor());
 
   app.useGlobalPipes(new ValidationPipe({
