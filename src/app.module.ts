@@ -10,9 +10,9 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
       ignoreEnvFile: true
-    }),
-    StreetNosheryCustomerModule, 
-    DatabaseProvider],
+    }), 
+    DatabaseProvider,
+    StreetNosheryCustomerModule],
   controllers: [AppController],
   providers: [AppService],
 })
