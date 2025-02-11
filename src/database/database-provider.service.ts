@@ -1,8 +1,9 @@
 import mongoose, { Connection } from "mongoose";
-import { CUSTOMER_DATABASE, DATABASE_CONNECTION } from "./database-provider.constants";
+import { CUSTOMER_DATABASE, CUSTOMER_OTP, DATABASE_CONNECTION } from "./database-provider.constants";
 import { ConnectionOptions } from "tls";
 import { ConfigService } from "@nestjs/config";
 import { ICustomer, customerSchema } from "src/customer/model/customer-model.model";
+import { ICustomerOtp, customerOtpSchema } from "src/customer/model/customer-otp.model";
 
 export const databaseProvider = [{
     provide: DATABASE_CONNECTION,
@@ -36,6 +37,19 @@ export const databaseProvider = [{
             )
             customer.syncIndexes();
             return customer;
+        },
+        inject: [DATABASE_CONNECTION, ConfigService]
+    },
+    {
+        provide: CUSTOMER_OTP,
+        useFactory: (connection: mongoose.Connection) => {
+            const customerOtp = connection.model<ICustomerOtp>(
+                "streetnosherycustomerotp",
+                customerOtpSchema,
+                "customer_otp"
+            )
+            customerOtp.syncIndexes();
+            return customerOtp;
         },
         inject: [DATABASE_CONNECTION, ConfigService]
     }

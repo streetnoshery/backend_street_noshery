@@ -6,6 +6,6 @@ export interface ICustomer extends Document {
 }
 
 export const customerSchema = new Schema({
-    mobileNumber: {type: String, require: true},
-    countryCode: {type: String, require: true}
+    mobileNumber: {type: String, required: true},
+    countryCode: {type: String, required: true}
 })

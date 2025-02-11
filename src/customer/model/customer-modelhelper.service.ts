@@ -1,13 +1,18 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { FilterQuery, Model, UpdateQuery} from "mongoose";
-import { CUSTOMER_DATABASE } from "src/database/database-provider.constants";
+import { FilterQuery, Model, UpdateQuery } from "mongoose";
+import { CUSTOMER_DATABASE, CUSTOMER_OTP } from "src/database/database-provider.constants";
 import { ICustomer } from "./customer-model.model";
+import { inject } from "dd-trace";
+import { ICustomerOtp } from "./customer-otp.model";
 
 @Injectable()
 export class StreetNosheryCustomerModelHelper {
     constructor(
         @Inject(CUSTOMER_DATABASE)
-        private customerModelhelper: Model<ICustomer>
+        private customerModelhelper: Model<ICustomer>,
+
+        @Inject(CUSTOMER_OTP)
+        private customerOtpModelHelper: Model<ICustomerOtp>
     ) {
 
     }
@@ -17,5 +22,17 @@ export class StreetNosheryCustomerModelHelper {
             upsert: true,
             new: true
         })
+    }
+
+    async otp(filter: FilterQuery<ICustomerOtp>, update: UpdateQuery<ICustomerOtp>) {
+        return this.customerOtpModelHelper.findOneAndUpdate(filter,
+            update, {
+            upsert: true,
+            new: true
+        })
+    }
+
+    async getOtp(filter: FilterQuery<ICustomerOtp>) {
+        return this.customerOtpModelHelper.findOne(filter).lean();
     }
 }
