@@ -17,11 +17,15 @@ export class StreetNosheryCustomerModelHelper {
 
     }
 
-    async createUser(filter: FilterQuery<ICustomer>, createUser: UpdateQuery<ICustomer>) {
+    async createOrUpdateUser(filter: FilterQuery<ICustomer>, createUser: UpdateQuery<ICustomer>) {
         return this.customerModelhelper.findOneAndUpdate(filter, createUser, {
             upsert: true,
             new: true
         })
+    }
+
+    async getUser(filter: FilterQuery<ICustomer>) {
+        return this.customerModelhelper.findOne(filter);
     }
 
     async otp(filter: FilterQuery<ICustomerOtp>, update: UpdateQuery<ICustomerOtp>) {

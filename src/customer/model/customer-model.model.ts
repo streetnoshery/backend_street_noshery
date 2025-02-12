@@ -1,11 +1,35 @@
 import { Document, Schema } from "mongoose";
+import { OnboardingStages } from "../enums/customer.enums";
 
-export interface ICustomer extends Document {
-    mobileNumber: string,
-    countryCode: string
+// Define Address interface
+interface IAddress {
+    firstLine: string;
+    secondLine?: string; // Optional field
+    shopId: number;
 }
 
-export const customerSchema = new Schema({
-    mobileNumber: {type: String, required: true},
-    countryCode: {type: String, required: true}
-})
+// Define Customer interface
+export interface ICustomer extends Document {
+    mobileNumber: string;
+    countryCode: string;
+    email: string;
+    password: string;
+    userName: string;
+    address: IAddress;
+    status: OnboardingStages;
+}
+
+// Define Customer Schema
+export const customerSchema = new Schema<ICustomer>({
+    mobileNumber: { type: String, required: true },
+    countryCode: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    userName: { type: String, required: true },
+    address: {
+        firstLine: { type: String, required: true },
+        secondLine: { type: String }, // Optional field
+        shopId: {type: Number}
+    },
+    status: { type: String, enum: Object.values(OnboardingStages), required: true }
+}, { timestamps: true }); // Adds createdAt & updatedAt fields automatically

@@ -3,65 +3,94 @@ import { StreetNosheryCreateCustomer } from "./dto/customer.dto";
 import { StreetNosheryCustomerModelHelper } from "./model/customer-modelhelper.service";
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
 import * as moment from 'moment';
+import { OnboardingStages } from "./enums/customer.enums";
 
 const prefix = "[STREET_NOSHERY_CUSTOMER_SERVICE]"
 @Injectable()
 export class StreetNosheryCustomerService {
     constructor(
         private readonly streetNosheryCustomerModelhelper: StreetNosheryCustomerModelHelper
-    ) {}
+    ) { }
 
     async getUser() {
-        return{ name: "sumit"}
+        return { name: "sumit" }
     }
 
     async createUser(body: StreetNosheryCreateCustomer) {
+        let updateObj: any = {};
+        const { mobileNumber } = body;
         try {
-            const {mobileNumber, countryCode} = body;
-            const res = await this.streetNosheryCustomerModelhelper.createUser({mobileNumber}, {
-                mobileNumber,
-                countryCode
-            });
+
+            const userDetails = await this.streetNosheryCustomerModelhelper.getUser({ mobileNumber });
+            console.log(`${prefix} (createUser) user details: ${JSON.stringify(userDetails)}`);
+            if (!userDetails) {
+                updateObj = {
+                    mobileNumber,
+                    countryCode: body.countryCode,
+                    status: OnboardingStages.MOBILE_VERIFICATION
+                }
+            }
+            else if (userDetails?.status == OnboardingStages.MOBILE_VERIFICATION) {
+                const { email, password } = body;
+                updateObj = {
+                    email,
+                    password,
+                    status: OnboardingStages.EMAIL_VERIFICATION
+                }
+            }
+            else if (userDetails?.status == OnboardingStages.EMAIL_VERIFICATION) {
+                const { address, userName } = body;
+                updateObj = {
+                    address,
+                    userName,
+                    status: OnboardingStages.USER_DETAILS_VERIFICATION
+                }
+            }
+            const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);
             console.log(`${prefix} (createUser) Successful || Response: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
             console.log(`${prefix} (createUser) Error: ${JSON.stringify(error)}`);
+            updateObj = {
+                status: OnboardingStages.FAILED
+            }
+            const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);
             throw error;
         }
     }
 
     async generateOtp(body: StreetNosheryGenerateOtp) {
         try {
-            const {mobileNumber, reason} = body;
+            const { mobileNumber, reason } = body;
             const otpData = await this.streetNosheryCustomerModelhelper.getOtp(body);
             const MAX_RETRIALS = 5;
 
             let res;
-            if(otpData) {
-                const {updatedAt} = otpData;
-                if(this.isExpiredOtp(updatedAt)) {
+            if (otpData) {
+                const { updatedAt } = otpData;
+                if (this.isExpiredOtp(updatedAt)) {
                     const generatedOtp = this.generateRandomOtp();
-                    const updateQuery =  {otp: generatedOtp, count: 1}
-                    res = await this.streetNosheryCustomerModelhelper.otp({mobileNumber, reason}, updateQuery); 
+                    const updateQuery = { otp: generatedOtp, count: 1 }
+                    res = await this.streetNosheryCustomerModelhelper.otp({ mobileNumber, reason }, updateQuery);
                     console.log(`${prefix} (generateOtp) Successful || Response: ${JSON.stringify(res)}`);
                     return;
                 }
             }
 
-            if(otpData && otpData?.count >= MAX_RETRIALS){
+            if (otpData && otpData?.count >= MAX_RETRIALS) {
                 console.log(`${prefix} (generateOtp) Failed to generate Otp: ${JSON.stringify(otpData)}`);
                 throw new BadRequestException('Limit Exceed');
             }
-            
+
             const generatedOtp = this.generateRandomOtp();
-            const updateQuery = {otp: generatedOtp, $inc: { count: 1 }} // Increment count by 1
-            res = await this.streetNosheryCustomerModelhelper.otp({mobileNumber, reason}, updateQuery);
-            
+            const updateQuery = { otp: generatedOtp, $inc: { count: 1 } } // Increment count by 1
+            res = await this.streetNosheryCustomerModelhelper.otp({ mobileNumber, reason }, updateQuery);
+
             console.log(`${prefix} (generateOtp) Successful || Response: ${JSON.stringify(res)}`);
             /* TODO 
             Function to send OTP on SMS
             */
-           return
+            return
         } catch (error) {
             console.log(`${prefix} (generateOtp) Error: ${JSON.stringify(error)}`);
             throw error;
@@ -71,17 +100,17 @@ export class StreetNosheryCustomerService {
     async verifyOtp(body: StreetNosheryGenerateOtp) {
         try {
             const res = await this.streetNosheryCustomerModelhelper.getOtp(body);
-            
-            if(!res) {
+
+            if (!res) {
                 console.log(`${prefix} (verifyOtp) Failed: ${JSON.stringify(res)}`);
                 throw new BadRequestException('Invalid OTP');
             }
 
-            const {updatedAt} = res;
-            if(this.isExpiredOtp(updatedAt)) {
+            const { updatedAt } = res;
+            if (this.isExpiredOtp(updatedAt)) {
                 throw new BadRequestException('Expired OTP');
             }
-            return 
+            return
         } catch (error) {
             console.log(`${prefix} (verifyOtp) Error: ${JSON.stringify(error)}`);
             throw error;
@@ -93,7 +122,7 @@ export class StreetNosheryCustomerService {
         return moment().isAfter(expiryTime);
     }
 
-    generateRandomOtp () {
+    generateRandomOtp() {
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
 }
