@@ -10,6 +10,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import mongoose from 'mongoose';
 import { StreetNosheryRequestInterceptor } from './common/decryption.interseptor';
+const {initializeFirebaseApp} = require("./common/firebase/firebase_utils");
 
 function formatErrorText(err: any): string {
   let errText = 'Uncaught Exception';
@@ -32,6 +33,8 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new StreetNosheryRequestInterceptor());
   app.useGlobalInterceptors(new StandardResponseInterceptor());
+  initializeFirebaseApp();
+
 
   app.useGlobalPipes(new ValidationPipe({
     transform: true
