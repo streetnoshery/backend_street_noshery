@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, setDoc } from 'firebase/firestore/lite';
+import { getFirestore, doc, setDoc, getDocs, query, collection} from 'firebase/firestore/lite';
 
 const prefix = "[FIREBASE_UTILS]"
 const firebaseConfig = {
@@ -26,18 +26,31 @@ const initializeFirebaseApp = () => {
     }
 }
 
-const uploadProcessedData = () => {
-    const data = {
-        "name": "Sumit",
-        "age": 25
-    }
+const uploadProcessedData = (data: any, collection: string, document: string) => {
 
     try {
-        const document = doc(firebaseDb, "appConfig", "street_noshery_review");
-        const dataUpdated = setDoc(document, data);
+        const documentRef = doc(firebaseDb, collection, document);
+        const dataUpdated = setDoc(documentRef, data);
         return dataUpdated;
     } catch (error) {
        console.log(`${prefix} (uploadProcessedData) Error: ${JSON.stringify(error)}`);
+       throw error;
+    }
+}
+
+const getTheData = async (collectionName: string) => {
+    try {
+        const collectionRef = collection(firebaseDb, collectionName);
+        const q = query(collectionRef);
+        const finalData = []
+        const docMap = await getDocs(q);
+        docMap.forEach((doc) => {
+            finalData.push(doc.data())
+        });
+        const res = JSON.stringify(finalData)
+        return JSON.parse(res);
+    } catch (error) {
+        console.log(`${prefix} (getTheData) Error: ${JSON.stringify(error)}`);
        throw error;
     }
 }
@@ -47,5 +60,6 @@ const getFirebaseApp = async () => app;
 module.exports = {
     initializeFirebaseApp,
     getFirebaseApp,
-    uploadProcessedData
+    uploadProcessedData,
+    getTheData
 }
