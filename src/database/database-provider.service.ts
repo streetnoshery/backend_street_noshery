@@ -1,9 +1,10 @@
 import mongoose, { Connection } from "mongoose";
-import { CUSTOMER_DATABASE, CUSTOMER_OTP, DATABASE_CONNECTION } from "./database-provider.constants";
+import { CUSTOMER_DATABASE, CUSTOMER_OTP, DATABASE_CONNECTION, MENU } from "./database-provider.constants";
 import { ConnectionOptions } from "tls";
 import { ConfigService } from "@nestjs/config";
 import { ICustomer, customerSchema } from "src/customer/model/customer-model.model";
 import { ICustomerOtp, customerOtpSchema } from "src/customer/model/customer-otp.model";
+import { IMenu, MenuSchema } from "src/menu/model/menu.model";
 
 export const databaseProvider = [{
     provide: DATABASE_CONNECTION,
@@ -50,6 +51,19 @@ export const databaseProvider = [{
             )
             customerOtp.syncIndexes();
             return customerOtp;
+        },
+        inject: [DATABASE_CONNECTION, ConfigService]
+    },
+    {
+        provide: MENU,
+        useFactory: (connection: mongoose.Connection) => {
+            const menu = connection.model<IMenu>(
+                "streetnosherymenu",
+                MenuSchema,
+                "menu"
+            )
+            menu.syncIndexes();
+            return menu;
         },
         inject: [DATABASE_CONNECTION, ConfigService]
     }
