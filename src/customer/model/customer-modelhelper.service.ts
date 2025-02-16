@@ -21,7 +21,7 @@ export class StreetNosheryCustomerModelHelper {
         return this.customerModelhelper.findOneAndUpdate(filter, createUser, {
             upsert: true,
             new: true
-        })
+        }).lean();
     }
 
     async getUser(filter: FilterQuery<ICustomer>) {

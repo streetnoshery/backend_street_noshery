@@ -17,6 +17,7 @@ export interface ICustomer extends Document {
     userName: string;
     address: IAddress;
     status: OnboardingStages;
+    customerId: string
 }
 
 // Define Customer Schema
@@ -31,5 +32,6 @@ export const customerSchema = new Schema<ICustomer>({
         secondLine: { type: String }, // Optional field
         shopId: {type: Number}
     },
-    status: { type: String, enum: Object.values(OnboardingStages), required: true }
+    status: { type: String, enum: Object.values(OnboardingStages), required: true },
+    customerId: { type: String, required: true }
 }, { timestamps: true }); // Adds createdAt & updatedAt fields automatically

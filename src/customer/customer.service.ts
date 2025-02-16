@@ -4,12 +4,15 @@ import { StreetNosheryCustomerModelHelper } from "./model/customer-modelhelper.s
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
 import * as moment from 'moment';
 import { OnboardingStages } from "./enums/customer.enums";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { EventHnadlerEnums } from "src/common/events/enums";
 
 const prefix = "[STREET_NOSHERY_CUSTOMER_SERVICE]"
 @Injectable()
 export class StreetNosheryCustomerService {
     constructor(
-        private readonly streetNosheryCustomerModelhelper: StreetNosheryCustomerModelHelper
+        private readonly streetNosheryCustomerModelhelper: StreetNosheryCustomerModelHelper,
+        private readonly emitterService: EventEmitter2
     ) { }
 
     async getUser() {
@@ -27,7 +30,8 @@ export class StreetNosheryCustomerService {
                 updateObj = {
                     mobileNumber,
                     countryCode: body.countryCode,
-                    status: OnboardingStages.MOBILE_VERIFICATION
+                    status: OnboardingStages.MOBILE_VERIFICATION,
+                    customerId: this.generateStreetNosheryId()
                 }
             }
             else if (userDetails?.status == OnboardingStages.MOBILE_VERIFICATION) {
@@ -48,6 +52,8 @@ export class StreetNosheryCustomerService {
             }
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);
             console.log(`${prefix} (createUser) Successful || Response: ${JSON.stringify(res)}`);
+            const { _id, __v, ...result } = res;
+            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, {data: result, customerId: res.customerId})
             return res;
         } catch (error) {
             console.log(`${prefix} (createUser) Error: ${JSON.stringify(error)}`);
@@ -124,5 +130,18 @@ export class StreetNosheryCustomerService {
 
     generateRandomOtp() {
         return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    generateStreetNosheryId(): string {
+        const prefix = 'STREET_NOSHERY';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let randomString = '';
+    
+        for (let i = 0; i < 20; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            randomString += characters[randomIndex];
+        }
+    
+        return `${prefix}_${randomString}`;
     }
 }

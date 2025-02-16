@@ -1,0 +1,3 @@
+export enum EventHnadlerEnums {
+    CUSTOMER_DETAILS_REFRESH = "CUSTOMER_DETAILS_REFRESH"
+}
