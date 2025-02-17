@@ -8,6 +8,7 @@ import { StreetNosheryFirebaseModule } from './common/firebase/firebase.module';
 import { StreetNosheryEventhandlerModule } from './common/events/event-handler.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { StreetNosheryMenuModule } from './menu/menu.module';
+import { StreetNosheryOrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { StreetNosheryMenuModule } from './menu/menu.module';
     StreetNosheryEventhandlerModule,
     StreetNosheryCustomerModule,
     StreetNosheryFirebaseModule,
-    StreetNosheryMenuModule
+    StreetNosheryMenuModule,
+    StreetNosheryOrderModule
   ],
   controllers: [AppController],
   providers: [AppService],
