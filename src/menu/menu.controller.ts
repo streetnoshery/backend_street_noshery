@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { StreetNosherymenuService } from "./menu.service";
 import { StreetNosheryMenuUpdateDto } from "./dto/menu.dto";
 const prefix = "[STREET_NOSHERY_MENU_CONTROLLER]";
@@ -22,6 +22,21 @@ export class StreetNosheryMenuController {
             return res;
         } catch (error) {
             console.log(`${prefix} (updateMenuForShop) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
+    @Get("")
+    async getMenuWithId(
+        @Query("shopId") shopId: string
+    ) {
+        try {
+            console.log(`${prefix} (getMenuWithId) Initiating menu update for shopId: ${JSON.stringify(shopId)}`);
+            const res = await this.streetNosheryMenuService.getMenu(shopId);
+            console.log(`${prefix} (getMenuWithId) Successful res: ${JSON.stringify(res)}`);
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (getMenuWithId) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }

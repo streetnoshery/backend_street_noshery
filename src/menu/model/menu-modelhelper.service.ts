@@ -22,4 +22,8 @@ export class StreetNosheryMenuModelHelperService {
             }
         ).lean();
     }
+
+    async getMenuWithShopId(shopId: string) {
+        return this.menuModel.findOne({shopId}).lean();
+    }
 }

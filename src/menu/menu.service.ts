@@ -14,13 +14,32 @@ export class StreetNosherymenuService {
 
     async createOrUpdateMenu(shopId: number, menu: Menu) {
         try {
-            const res = await this.StreetNosheryModelHelperService.createOrupdateMenu({shopId}, menu);
+            const updateMenu = {
+                ...menu,
+                foodId: this.randomFoodId()
+            }
+            const res = await this.StreetNosheryModelHelperService.createOrupdateMenu({shopId}, updateMenu);
             console.log(`${prefix} (createOrUpdateMenu) Successful res: ${JSON.stringify(res)}`);
             const {_id, __v, ...result} = res;
             this.emitterService.emit(EventHnadlerEnums.MENU_UPDATE, {shopId: result.shopId, data: result})
             return res;
         } catch (error) {
             console.log(`${prefix} (createOrUpdateMenu) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
+    randomFoodId() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    async getMenu(shopId: string) {
+        try {
+            const res = await this.StreetNosheryModelHelperService.getMenuWithShopId(shopId);
+            console.log(`${prefix} (getMenu) Successful res: ${JSON.stringify(res)}`);
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (getMenu) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
