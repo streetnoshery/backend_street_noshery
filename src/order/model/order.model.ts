@@ -39,5 +39,6 @@ export const customerOrderDataSchema = new Schema({
 }, { timestamps: true });                                          // Automatically adds `createdAt` and `updatedAt` timestamps
 
 // Adding indexes to improve query performance for operations involving customerId and shopId
-customerOrderDataSchema.index({ customerId: 1 });  // Index on customerId for faster queries
-customerOrderDataSchema.index({ shopId: 1 });      // Index on shopId for faster queries
+customerOrderDataSchema.index({ customerId: 1 });        // Index on customerId for faster queries
+customerOrderDataSchema.index({ shopId: 1 });            // Index on shopId for faster queries
+customerOrderDataSchema.index({ orderTrackId: 1 });      // Index on orderTrackId for faster queries

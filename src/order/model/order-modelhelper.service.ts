@@ -13,4 +13,8 @@ export class StreetNosheryOrderModelHelperService {
     async createOrupdateOrder(orderTrackId: string, updateObject: UpdateQuery<ICustomerOrderData>) {
         return this.streetNosheryOrdersmodel.findOneAndUpdate({orderTrackId}, updateObject, {upsert: true, new: true}).lean();
     }
+
+    async getPastOrders(filter: FilterQuery<ICustomerOrderData>) {
+        return this.streetNosheryOrdersmodel.find(filter).sort({ orderPlacedAt: -1 }).exec();
+    }
 }

@@ -1,8 +1,6 @@
 export enum CustomerOrderStatus {
     PLACED = 'PLACED',
     CONFIRMED = 'CONFIRMED',
-    PREPARING = 'PREPARING',
-    READY = 'READY',
     OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED'
