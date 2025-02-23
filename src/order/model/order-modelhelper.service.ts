@@ -10,8 +10,8 @@ export class StreetNosheryOrderModelHelperService {
         private readonly streetNosheryOrdersmodel: Model<ICustomerOrderData>
     ) {}
 
-    async createOrupdateOrder(orderTrackId: string, updateObject: UpdateQuery<ICustomerOrderData>) {
-        return this.streetNosheryOrdersmodel.findOneAndUpdate({orderTrackId}, updateObject, {upsert: true, new: true}).lean();
+    async createOrupdateOrder(filter: FilterQuery<ICustomerOrderData>, updateObject: UpdateQuery<ICustomerOrderData>) {
+        return this.streetNosheryOrdersmodel.findOneAndUpdate(filter, updateObject, {upsert: true, new: true}).lean();
     }
 
     async getPastOrders(filter: FilterQuery<ICustomerOrderData>) {

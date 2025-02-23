@@ -5,3 +5,9 @@ export enum CustomerOrderStatus {
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED'
 }
+
+export enum PaymentStatus {
+    INITIATED = "INITIATED",
+    SUCCESS = "SUCCESS",
+    FAILED = "FAILED"
+}

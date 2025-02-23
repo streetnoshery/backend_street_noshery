@@ -1,9 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { StreetNosheryOrderModelHelperService } from "./model/order-modelhelper.service";
-import { CustomerOrderDto } from "./dto/order.dto";
-import { CustomerOrderStatus } from "./enums/order.enum";
+import { CustomerOrderDto, CustomerOrderFTDto, UpdateOrderDto } from "./dto/order.dto";
+import { CustomerOrderStatus, PaymentStatus } from "./enums/order.enum";
+import { UpdateQuery } from "mongoose";
+import { ICustomerOrderData } from "./model/order.model";
 
-const prefic = "[STREET_NOSHERY_ORDER_SERVICE]"
+const prefix = "[STREET_NOSHERY_ORDER_SERVICE]"
 @Injectable()
 export class StreetnosheryOrderService {
     constructor(
@@ -13,30 +15,34 @@ export class StreetnosheryOrderService {
     async getPastOrders(customerId: string) {
         try {
             const res = await this.orderModelHelperService.getPastOrders({ customerId });
-            console.log(`${prefic} (getPastOrders) Response: ${JSON.stringify(res)}`);
+            console.log(`${prefix} (getPastOrders) Response: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
-            console.log(`${prefic} (getPastOrders) Error: ${JSON.stringify(error)}`);
+            console.log(`${prefix} (getPastOrders) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
 
-    async createOrder(order: CustomerOrderDto) {
+    async createOrderFT(order: CustomerOrderFTDto) {
         try {
             const orderTrackingId = this.generateOrderTrackId();
-            const updateObject = {
+            const updateObject: UpdateQuery<ICustomerOrderData> = {
                 customerId: order.customerId,
                 shopId: order.shopId,
                 orderItems: order.orderItems,
                 orderTrackId: orderTrackingId,
-                orderStatus: CustomerOrderStatus.CONFIRMED,
-                orderConfirmedAt: new Date()
+                orderStatus: CustomerOrderStatus.PLACED,
+                orderPlacedAt: new Date(),
+                isOrderPlaced: true,
+                paymentStatus: PaymentStatus.INITIATED
             }
-            const res = await this.orderModelHelperService.createOrupdateOrder(orderTrackingId, updateObject);
-            console.log(`${prefic} (createOrder) Order created successfully for trackingId: ${orderTrackingId}`);
+            const res = await this.orderModelHelperService.createOrupdateOrder({orderTrackingId}, updateObject);
+            console.log(`${prefix} (createOrderFT) Order FT created successfully for trackingId: ${orderTrackingId}`);
+
+            // TODO: Payment API
             return res;
         } catch (error) {
-            console.log(`${prefic} (createOrder) Error: ${JSON.stringify(error)}`);
+            console.log(`${prefix} (createOrderFT) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -49,5 +55,58 @@ export class StreetnosheryOrderService {
             uniqueId += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return uniqueId;
+    }
+
+    async createOrder(order: CustomerOrderDto) {
+        try {
+            const updateobje: UpdateQuery<ICustomerOrderData> = {
+                isOrderConfirmed: true,
+                orderConfirmedAt: new Date(),
+                orderStatus: CustomerOrderStatus.CONFIRMED,
+            }
+            const confirmOrder = await this.orderModelHelperService.createOrupdateOrder(order, updateobje);
+            console.log(`${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId}`);
+            return confirmOrder
+        } catch (error) {
+            console.log(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
+    async updateOrders(order: UpdateOrderDto) {
+        try {
+            const {orderTrackId, shopId, customerId} = order;
+            const updateobje: UpdateQuery<ICustomerOrderData> = this.getUpdateObj(order.orderStatus)
+
+            const confirmOrder = await this.orderModelHelperService.createOrupdateOrder({orderTrackId, shopId, customerId}, updateobje);
+            console.log(`${prefix} (updateOrders) Order confirmed for TrackId: ${orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`);
+            return confirmOrder;
+        } catch (error) {
+            console.log(`${prefix} (updateOrders) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
+    getUpdateObj(Status: CustomerOrderStatus) {
+        switch(Status) {
+            case CustomerOrderStatus.OUT_FOR_DELIVERY:
+                return {
+                    orderOutForDeliveryAt: new Date(),
+                    isOrderOutForDelivery: true,
+                    orderStatus: CustomerOrderStatus.OUT_FOR_DELIVERY,
+                }
+            case CustomerOrderStatus.DELIVERED:
+                return {
+                    orderDeliveredAt: new Date(),
+                    isOrderDelivered: true,
+                    orderStatus: CustomerOrderStatus.DELIVERED,
+                    isOrderInProgress: false
+                } 
+            case CustomerOrderStatus.CANCELLED:
+                return {
+                    orderCancelledAt: new Date(),
+                    isorderCancelled: true
+                } 
+        }
     }
 }

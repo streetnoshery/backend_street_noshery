@@ -1,5 +1,5 @@
 import { Document, Schema } from "mongoose";
-import { CustomerOrderStatus } from "src/order/enums/order.enum";
+import { CustomerOrderStatus, PaymentStatus } from "src/order/enums/order.enum";
 
 
 interface IOrderItem {
@@ -17,10 +17,18 @@ export interface ICustomerOrderData extends Document {
     orderTrackId: string;
     orderStatus: CustomerOrderStatus;
     orderPlacedAt: Date; // Will set before the amount txns
+    isOrderPlaced: boolean;
+    paymentStatus: PaymentStatus;
+    isPaymentDone: boolean;
+    paymentId: string;
     orderConfirmedAt?: Date;
+    isOrderConfirmed: boolean;
     orderOutForDeliveryAt?: Date;
+    isOrderOutForDelivery: boolean;
     orderDeliveredAt?: Date;
+    isOrderDelivered: boolean;
     orderCancelledAt?: Date;
+    isorderCancelled: boolean;
     isOrderInProgress: boolean;
 }
 
@@ -39,10 +47,18 @@ export const customerOrderDataSchema = new Schema<ICustomerOrderData>({
     orderTrackId: { type: String, required: true, unique: true },
     orderStatus: { type: String, enum: Object.values(CustomerOrderStatus), required: true },
     orderPlacedAt: { type: Date, required: true },
+    isOrderPlaced: {type: Boolean, default: false},
+    paymentStatus: { type: String, enum: Object.values(PaymentStatus), required: true },
+    isPaymentDone: {type: Boolean, default: false},
+    paymentId: {type: String},
     orderConfirmedAt: { type: Date },
+    isOrderConfirmed: {type: Boolean, default: false},
     orderOutForDeliveryAt: { type: Date },
+    isOrderOutForDelivery: {type: Boolean, default: false},
     orderDeliveredAt: { type: Date },
+    isOrderDelivered: {type: Boolean, default: false},
     orderCancelledAt: { type: Date },
+    isorderCancelled: {type: Boolean, default: false},
     isOrderInProgress: {type: Boolean, default: true}
 }, { timestamps: true });
 

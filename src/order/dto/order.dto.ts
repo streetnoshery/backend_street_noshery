@@ -1,5 +1,6 @@
-import { IsString, IsNumber, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsNumber, IsArray, ValidateNested, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CustomerOrderStatus } from '../enums/order.enum';
 
 export class OrderItemDto {
     @IsString()
@@ -18,7 +19,7 @@ export class OrderItemDto {
     foodId: number;
 }
 
-export class CustomerOrderDto {
+export class CustomerOrderFTDto {
     @IsString()
     customerId: string;
 
@@ -29,4 +30,29 @@ export class CustomerOrderDto {
     @ValidateNested({ each: true })
     @Type(() => OrderItemDto)
     orderItems: OrderItemDto[];
+}
+
+export class CustomerOrderDto {
+    @IsString()
+    orderTrackId: string;
+
+    @IsString()
+    customerId: string;
+
+    @IsString()
+    shopId: string;
+}
+
+export class UpdateOrderDto {
+    @IsString()
+    orderTrackId: string;
+
+    @IsString()
+    customerId: string;
+
+    @IsString()
+    shopId: string;
+
+    @IsEnum(CustomerOrderStatus)
+    orderStatus: CustomerOrderStatus;
 }
