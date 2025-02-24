@@ -15,8 +15,14 @@ export class StreetNosheryCustomerService {
         private readonly emitterService: EventEmitter2
     ) { }
 
-    async getUser() {
-        return { name: "sumit" }
+    async getUser(customerId: string) {
+        try {
+            const res = await this.streetNosheryCustomerModelhelper.getUser({customerId});
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (getUser) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
     }
 
     async createUser(body: StreetNosheryCreateCustomer) {

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { StreetNosheryCustomerService } from "./customer.service";
 import { StreetNosheryCreateCustomer } from "./dto/customer.dto";
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
@@ -11,8 +11,18 @@ export class StreetNosheryCustomerController {
     ) {}
 
     @Get()
-    async getUser() {
-        return this.streetNosheryCustomerService.getUser();
+    async getUser(
+        @Query("customerId") customerId: string
+    ) {
+        try {
+            console.log(`${prefix} (getUser) Initiating || data: customerId: ${customerId}`);
+            const res = await this.streetNosheryCustomerService.getUser(customerId);
+            console.log(`${prefix} (getUser) Successful || Response: ${JSON.stringify(res)}`);
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (getUser) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
     }
 
     @Post("create")
