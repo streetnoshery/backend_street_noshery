@@ -36,7 +36,7 @@ export class StreetnosheryOrderService {
                 isOrderPlaced: true,
                 paymentStatus: PaymentStatus.INITIATED
             }
-            const res = await this.orderModelHelperService.createOrupdateOrder({orderTrackingId}, updateObject);
+            const res = await this.orderModelHelperService.createOrupdateOrder({orderTrackId: orderTrackingId}, updateObject);
             console.log(`${prefix} (createOrderFT) Order FT created successfully for trackingId: ${orderTrackingId}`);
 
             // TODO: Payment API

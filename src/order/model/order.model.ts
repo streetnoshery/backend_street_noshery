@@ -44,7 +44,7 @@ export const customerOrderDataSchema = new Schema<ICustomerOrderData>({
     customerId: { type: String, required: true },
     shopId: { type: String, required: true },
     orderItems: { type: [OrderItemSchema], required: true },
-    orderTrackId: { type: String, required: true, unique: true },
+    orderTrackId: { type: String, required: true},
     orderStatus: { type: String, enum: Object.values(CustomerOrderStatus), required: true },
     orderPlacedAt: { type: Date, required: true },
     isOrderPlaced: {type: Boolean, default: false},
