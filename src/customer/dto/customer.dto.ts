@@ -1,4 +1,4 @@
-import { IsNumber, IsNumberString, IsOptional, IsString, Length, ValidateNested } from "class-validator";
+import { IsBoolean, IsNumber, IsNumberString, IsOptional, IsString, Length, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 class Address {
@@ -37,4 +37,12 @@ export class StreetNosheryCreateCustomer {
     @Type(() => Address)
     @IsOptional()
     address: Address; // Fixed naming (camelCase)
+}
+
+export class StreetNosheryEnableNotification {
+    @IsString()
+    customerId: string
+
+    @IsBoolean()
+    isEnable: boolean
 }

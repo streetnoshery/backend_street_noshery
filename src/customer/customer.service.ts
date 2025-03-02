@@ -15,9 +15,9 @@ export class StreetNosheryCustomerService {
         private readonly emitterService: EventEmitter2
     ) { }
 
-    async getUser(customerId: string) {
+    async getUser(mobileNumber: string) {
         try {
-            const res = await this.streetNosheryCustomerModelhelper.getUser({customerId});
+            const res = await this.streetNosheryCustomerModelhelper.getUser({mobileNumber});
             return res;
         } catch (error) {
             console.log(`${prefix} (getUser) Error: ${JSON.stringify(error)}`);
@@ -149,5 +149,16 @@ export class StreetNosheryCustomerService {
         }
     
         return `${prefix}_${randomString}`;
+    }
+
+    async enableEmailNotification(body: {customerId: string, isEnable: boolean}) {
+        try {
+            const {customerId, isEnable} = body;
+            const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({customerId}, {isEmailNotificationEnable: isEnable});
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (enableEmailNotification) Error: ${JSON.stringify(error)} `);
+            throw error;
+        }
     }
 }

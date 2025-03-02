@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Query } from "@nestjs/common";
 import { StreetNosheryCustomerService } from "./customer.service";
-import { StreetNosheryCreateCustomer } from "./dto/customer.dto";
+import { StreetNosheryCreateCustomer, StreetNosheryEnableNotification } from "./dto/customer.dto";
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
 
 const prefix = "[STREET_NOSHERY_CUSTOMER_CONTROLLER]"
@@ -12,11 +12,11 @@ export class StreetNosheryCustomerController {
 
     @Get()
     async getUser(
-        @Query("customerId") customerId: string
+        @Query("mobileNumber") mobileNumber: string
     ) {
         try {
-            console.log(`${prefix} (getUser) Initiating || data: customerId: ${customerId}`);
-            const res = await this.streetNosheryCustomerService.getUser(customerId);
+            console.log(`${prefix} (getUser) Initiating`);
+            const res = await this.streetNosheryCustomerService.getUser(mobileNumber);
             console.log(`${prefix} (getUser) Successful || Response: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
@@ -62,6 +62,20 @@ export class StreetNosheryCustomerController {
             const res = await this.streetNosheryCustomerService.verifyOtp(body);
         } catch (error) {
             console.log(`${prefix} (verifyOtp) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
+    @Post("enable-notification")
+    async enableEmailNotification(
+        @Body() body: StreetNosheryEnableNotification
+    ) {
+        try {
+            console.log(`${prefix} (enableEmailNotification) Initiating || data: ${JSON.stringify(body.customerId)}`);
+            const res = await this.streetNosheryCustomerService.enableEmailNotification({customerId: body.customerId, isEnable: body.isEnable});
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (enableEmailNotification) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
