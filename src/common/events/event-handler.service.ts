@@ -4,6 +4,7 @@ import { EventHnadlerEnums } from "./enums";
 import { StreetNosheryFirebaseService } from "../firebase/firebase.service";
 import { FirebaseCollections } from "../common.utils";
 const prefix = "[EVENT_HANDLER_SERVICE]"
+const crypto = require('crypto');
 
 @Injectable()
 export class StreetNosheryEventhandlerService {
@@ -19,13 +20,13 @@ export class StreetNosheryEventhandlerService {
     async refreshCustomerData(
         input: {
             data: any,
-            customerId: string
+            mobileNumber: string
         }
     ) {
         try {
-            if (!input.customerId) return;
+            if (!input.mobileNumber) return;
             const collectionName = FirebaseCollections.CUSTOMERS;
-            const document = input.customerId;
+            const document = this.hashMobileNumber(input.mobileNumber);
             const res = await this.firebaseService.uploadData({data: input.data, collection: collectionName, document});
             return res;
         } catch (error) {
@@ -52,5 +53,9 @@ export class StreetNosheryEventhandlerService {
             console.log(`${prefix} (refreshCustomerData) Error: ${JSON.stringify(error)}`);
             throw error;
         }
+    }
+
+    hashMobileNumber(mobileNumber: string) {
+        return crypto.createHash('sha256').update(mobileNumber.toString()).digest('hex');
     }
 }

@@ -59,7 +59,7 @@ export class StreetNosheryCustomerService {
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);
             console.log(`${prefix} (createUser) Successful || Response: ${JSON.stringify(res)}`);
             const { _id, __v, ...result } = res;
-            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, {data: result, customerId: res.customerId})
+            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, {data: result, mobileNumber: res.mobileNumber})
             return res;
         } catch (error) {
             console.log(`${prefix} (createUser) Error: ${JSON.stringify(error)}`);
