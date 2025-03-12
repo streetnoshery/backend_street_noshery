@@ -46,3 +46,18 @@ export class StreetNosheryEnableNotification {
     @IsBoolean()
     isEnable: boolean
 }
+
+export class UpdateAddressDto{
+    @IsString()
+    firstLine: string;
+
+    @IsString()
+    @IsOptional()
+    secondLine: string;
+
+    @IsNumber()
+    shopId: number;
+
+    @IsString()
+    customerId: string;
+}

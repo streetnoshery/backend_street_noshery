@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { StreetNosheryCreateCustomer } from "./dto/customer.dto";
+import { StreetNosheryCreateCustomer, UpdateAddressDto } from "./dto/customer.dto";
 import { StreetNosheryCustomerModelHelper } from "./model/customer-modelhelper.service";
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
 import * as moment from 'moment';
@@ -17,7 +17,7 @@ export class StreetNosheryCustomerService {
 
     async getUser(mobileNumber: string) {
         try {
-            const res = await this.streetNosheryCustomerModelhelper.getUser({mobileNumber});
+            const res = await this.streetNosheryCustomerModelhelper.getUser({ mobileNumber });
             return res;
         } catch (error) {
             console.log(`${prefix} (getUser) Error: ${JSON.stringify(error)}`);
@@ -59,7 +59,7 @@ export class StreetNosheryCustomerService {
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);
             console.log(`${prefix} (createUser) Successful || Response: ${JSON.stringify(res)}`);
             const { _id, __v, ...result } = res;
-            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, {data: result, mobileNumber: res.mobileNumber})
+            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             return res;
         } catch (error) {
             console.log(`${prefix} (createUser) Error: ${JSON.stringify(error)}`);
@@ -142,22 +142,41 @@ export class StreetNosheryCustomerService {
         const prefix = 'STREET_NOSHERY';
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let randomString = '';
-    
+
         for (let i = 0; i < 20; i++) {
             const randomIndex = Math.floor(Math.random() * characters.length);
             randomString += characters[randomIndex];
         }
-    
+
         return `${prefix}_${randomString}`;
     }
 
-    async enableEmailNotification(body: {customerId: string, isEnable: boolean}) {
+    async enableEmailNotification(body: { customerId: string, isEnable: boolean }) {
         try {
-            const {customerId, isEnable} = body;
-            const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({customerId}, {isEmailNotificationEnable: isEnable});
+            const { customerId, isEnable } = body;
+            const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ customerId }, { isEmailNotificationEnable: isEnable });
             return res;
         } catch (error) {
             console.log(`${prefix} (enableEmailNotification) Error: ${JSON.stringify(error)} `);
+            throw error;
+        }
+    }
+
+    async updateAddress(body: UpdateAddressDto) {
+        try {
+            const { firstLine, secondLine, shopId, customerId } = body;
+            const createUser = {
+                $set: {
+                    "address.firstLine": firstLine,
+                    "address.secondLine": secondLine,
+                    "address.shopId": shopId
+                }
+            };
+            
+            const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ customerId }, createUser);
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (updateAddress) Error: ${JSON.stringify(error)} `);
             throw error;
         }
     }
