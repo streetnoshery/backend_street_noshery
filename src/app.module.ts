@@ -9,6 +9,7 @@ import { StreetNosheryEventhandlerModule } from './common/events/event-handler.m
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { StreetNosheryMenuModule } from './menu/menu.module';
 import { StreetNosheryOrderModule } from './order/order.module';
+import { StreetNosheryReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { StreetNosheryOrderModule } from './order/order.module';
     StreetNosheryCustomerModule,
     StreetNosheryFirebaseModule,
     StreetNosheryMenuModule,
-    StreetNosheryOrderModule
+    StreetNosheryOrderModule,
+    StreetNosheryReviewModule
   ],
   controllers: [AppController],
   providers: [AppService],

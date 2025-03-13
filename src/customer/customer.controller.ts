@@ -91,7 +91,7 @@ export class StreetNosheryCustomerController {
             return res;
         } catch (error) {
             console.log(`${prefix} (updateAddress) Error: ${JSON.stringify(error)}`);
-            throw error
+            throw error;
         }
     }
 }
