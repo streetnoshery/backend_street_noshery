@@ -67,6 +67,8 @@ export class StreetNosheryCustomerService {
                 status: OnboardingStages.FAILED
             }
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);
+            const { _id, __v, ...result } = res;
+            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             throw error;
         }
     }
@@ -155,6 +157,8 @@ export class StreetNosheryCustomerService {
         try {
             const { customerId, isEnable } = body;
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ customerId }, { isEmailNotificationEnable: isEnable });
+            const { _id, __v, ...result } = res;
+            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             return res;
         } catch (error) {
             console.log(`${prefix} (enableEmailNotification) Error: ${JSON.stringify(error)} `);
@@ -174,6 +178,8 @@ export class StreetNosheryCustomerService {
             };
             
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ customerId }, createUser);
+            const { _id, __v, ...result } = res;
+            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             return res;
         } catch (error) {
             console.log(`${prefix} (updateAddress) Error: ${JSON.stringify(error)} `);
