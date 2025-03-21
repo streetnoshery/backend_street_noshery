@@ -33,8 +33,8 @@ export class StandardResponseInterceptor implements NestInterceptor {
             data: res,
             path: request.url
         };
-        
+
         const encryptedResponse = encrypt(JSON.stringify(response));
-        return { payload: encryptedResponse };
+        return { response: encryptedResponse };
     }
 }

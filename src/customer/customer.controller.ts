@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { StreetNosheryCustomerService } from "./customer.service";
 import { StreetNosheryCreateCustomer, StreetNosheryEnableNotification, UpdateAddressDto } from "./dto/customer.dto";
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
+import { AuthGuard } from "src/common/authguard";
 
 const prefix = "[STREET_NOSHERY_CUSTOMER_CONTROLLER]"
 @Controller("customer")
@@ -11,6 +12,7 @@ export class StreetNosheryCustomerController {
     ) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     async getUser(
         @Query("mobileNumber") mobileNumber: string
     ) {

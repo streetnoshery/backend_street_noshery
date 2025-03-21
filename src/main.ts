@@ -31,7 +31,7 @@ async function bootstrap() {
   app.use(httpContext.middleware);
   app.use(setContext);
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new StreetNosheryRequestInterceptor());
+  // app.useGlobalInterceptors(new StreetNosheryRequestInterceptor());
   app.useGlobalInterceptors(new StandardResponseInterceptor());
   initializeFirebaseApp();
 
