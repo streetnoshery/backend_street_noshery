@@ -9,7 +9,7 @@ import { StandardResponseInterceptor } from './common/response-transaformation.i
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import mongoose from 'mongoose';
-import { StreetNosheryRequestInterceptor } from './common/decryption.interseptor';
+// import { StreetNosheryRequestInterceptor } from './common/decryption.interseptor';
 const {initializeFirebaseApp} = require("./common/firebase/firebase_utils");
 
 function formatErrorText(err: any): string {
@@ -23,9 +23,13 @@ function formatErrorText(err: any): string {
   return errText
 }
 
+const port = process.env.PORT || 3000;
+const globalPrefix = process.env.GLOBAL_PREFIX || "street-noshery"
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix("street-noshery");
+  console.log(`global prefix: ${globalPrefix}`);
+  app.setGlobalPrefix(globalPrefix);
   app.enableCors(corsOption);
   app.use(helmet());
   app.use(httpContext.middleware);
@@ -53,7 +57,7 @@ async function bootstrap() {
   });
   mongoose.set('autoIndex', true);
 
-  await app.listen(3000);
-  console.log("App listening on port", 3000)
+  await app.listen(port);
+  console.log("App listening on port", port);
 }
 bootstrap();

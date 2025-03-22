@@ -1,21 +1,23 @@
-import mongoose, { Connection } from "mongoose";
+import mongoose, { Connection, ConnectOptions} from "mongoose";
 import { CUSTOMER_DATABASE, CUSTOMER_OTP, DATABASE_CONNECTION, MENU, ORDERS, REVIEWS } from "./database-provider.constants";
-import { ConnectionOptions } from "tls";
 import { ConfigService } from "@nestjs/config";
 import { ICustomer, customerSchema } from "src/customer/model/customer-model.model";
 import { ICustomerOtp, customerOtpSchema } from "src/customer/model/customer-otp.model";
 import { IMenu, MenuSchema } from "src/menu/model/menu.model";
 import { ICustomerOrderData, customerOrderDataSchema } from "src/order/model/order.model";
 import { IShop, ShopSchema } from "src/review/model/shop-reviews-model.model";
+require("dotenv").config();
+
+const MONGO_URL = process.env.MONGO_URL
 
 export const databaseProvider = [{
     provide: DATABASE_CONNECTION,
     useFactory: (): Connection => {
-        console.log(`Db URL: `);
-        const connection = mongoose.createConnection("mongodb://localhost/street_noshery", {
+        console.log(`Db URL: ${MONGO_URL}`);
+        const connection = mongoose.createConnection(MONGO_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true
-        } as ConnectionOptions);
+        } as ConnectOptions);
 
         connection.on('connected', () => {
             console.log(`DB connected`)
