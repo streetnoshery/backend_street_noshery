@@ -20,11 +20,13 @@ export const databaseProvider = [{
         } as ConnectOptions);
 
         connection.on('connected', () => {
+            console.log(`DB url: ${MONGO_URL}`);
             console.log(`DB connected`)
         });
 
         connection.on('error', (err) => {
             console.log(`Failed to connect DB`);
+            console.log(`DB url: ${MONGO_URL}`);
             console.log(`Error: ${JSON.stringify(err)}`)
         });
 
