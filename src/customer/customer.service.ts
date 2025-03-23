@@ -104,7 +104,7 @@ export class StreetNosheryCustomerService {
             /* TODO 
             Function to send OTP on SMS
             */
-            return
+            return "ok";
         } catch (error) {
             console.log(`${prefix} (generateOtp) Error: ${JSON.stringify(error)}`);
             throw error;

@@ -49,6 +49,7 @@ export class StreetNosheryCustomerController {
         try {
             console.log(`${prefix} (generateOtp) Initiating || data: ${JSON.stringify(body)}`);
             const res = await this.streetNosheryCustomerService.generateOtp(body);
+            return res;
         } catch (error) {
             console.log(`${prefix} (generateOtp) Error: ${JSON.stringify(error)}`);
             throw error;

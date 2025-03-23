@@ -8,11 +8,14 @@ const IV = "sumitkumargodwan"; // 16-byte IV
 const ALGORITHM = 'aes-256-cbc';
 
 function encrypt(text: string): string {
-  const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv(ALGORITHM, SECRET_KEY, iv);
-  let encrypted = cipher.update(text, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return iv.toString('hex') + ':' + encrypted;
+    const iv = Buffer.from(IV, 'utf8'); // Convert static IV to buffer
+    const key = Buffer.from(SECRET_KEY, 'utf8'); // Convert key to buffer
+  
+    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+  
+    return encrypted; // No need to append IV since it's static
 }
 
 @Injectable()
