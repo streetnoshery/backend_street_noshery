@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsNumberString, IsOptional, IsString, Length, ValidateNested } from "class-validator";
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString, Length, Matches, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 class Address {
@@ -47,7 +47,7 @@ export class StreetNosheryEnableNotification {
     isEnable: boolean
 }
 
-export class UpdateAddressDto{
+export class UpdateAddressDto {
     @IsString()
     firstLine: string;
 
@@ -60,4 +60,38 @@ export class UpdateAddressDto{
 
     @IsString()
     customerId: string;
+}
+
+export class UpdateCustomerDetailsDto {
+    @IsString()
+    customerId: string;
+
+
+    @IsNotEmpty()
+    @IsString()
+    @Length(10, 15)
+    @IsOptional()
+    mobileNumber: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @Matches(/^\+\d{1,3}$/) // Ensures country code format like +91
+    @IsOptional()
+    countryCode: string;
+
+    @IsNotEmpty()
+    @IsEmail()
+    @IsOptional()
+    email: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/)
+    @IsOptional()
+    password: string; // At least 6 chars, 1 uppercase, 1 number, 1 special char
+
+    @IsNotEmpty()
+    @IsString()
+    @IsOptional()
+    userName: string;
 }

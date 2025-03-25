@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { StreetNosheryCustomerService } from "./customer.service";
-import { StreetNosheryCreateCustomer, StreetNosheryEnableNotification, UpdateAddressDto } from "./dto/customer.dto";
+import { StreetNosheryCreateCustomer, StreetNosheryEnableNotification, UpdateAddressDto, UpdateCustomerDetailsDto } from "./dto/customer.dto";
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
 import { AuthGuard } from "src/common/authguard";
 
@@ -94,6 +94,19 @@ export class StreetNosheryCustomerController {
             return res;
         } catch (error) {
             console.log(`${prefix} (updateAddress) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
+    @Patch("update-customer")
+    async updateCustomer(@Body() body: UpdateCustomerDetailsDto) {
+        try {
+            console.log(`${prefix} (updateCustomer) Initiating || data: ${JSON.stringify(body.customerId)}`);
+            const res = await this.streetNosheryCustomerService.updateUserDetails(body);
+            console.log(`${prefix} (updateCustomer) Successful || data: ${JSON.stringify(res)}`);
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (updateCustomer) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }

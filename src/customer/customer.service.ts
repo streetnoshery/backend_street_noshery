@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { StreetNosheryCreateCustomer, UpdateAddressDto } from "./dto/customer.dto";
+import { StreetNosheryCreateCustomer, UpdateAddressDto, UpdateCustomerDetailsDto } from "./dto/customer.dto";
 import { StreetNosheryCustomerModelHelper } from "./model/customer-modelhelper.service";
 import { StreetNosheryGenerateOtp } from "./dto/otp.dto";
 import * as moment from 'moment';
@@ -183,6 +183,20 @@ export class StreetNosheryCustomerService {
             return res;
         } catch (error) {
             console.log(`${prefix} (updateAddress) Error: ${JSON.stringify(error)} `);
+            throw error;
+        }
+    }
+
+    async updateUserDetails(body: UpdateCustomerDetailsDto) {
+        try {
+            const {customerId, ...obj} = body;
+            
+            const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ customerId }, obj);
+            const { _id, __v, ...result } = res;
+            this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (updateUserDetails) Error: ${JSON.stringify(error)} `);
             throw error;
         }
     }
