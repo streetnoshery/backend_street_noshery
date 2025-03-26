@@ -42,10 +42,13 @@ export class StreetNosheryCustomerService {
             }
             else if (userDetails?.status == OnboardingStages.MOBILE_VERIFICATION) {
                 const { email, password } = body;
+                const isRegisterForShop = await this.streetNosheryCustomerModelhelper.getEmail({email});
+                console.log(`${prefix} (createUser) is user going to register for shop: ${JSON.stringify(isRegisterForShop)}`)
                 updateObj = {
                     email,
                     password,
-                    status: OnboardingStages.EMAIL_VERIFICATION
+                    status: OnboardingStages.EMAIL_VERIFICATION,
+                    isRegisterForShop: isRegisterForShop ? true : false
                 }
             }
             else if (userDetails?.status == OnboardingStages.EMAIL_VERIFICATION) {
@@ -53,7 +56,7 @@ export class StreetNosheryCustomerService {
                 updateObj = {
                     address,
                     userName,
-                    status: OnboardingStages.USER_DETAILS_VERIFICATION
+                    status: OnboardingStages.USER_DETAILS_VERIFICATION,
                 }
             }
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);

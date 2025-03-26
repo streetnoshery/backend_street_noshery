@@ -1,11 +1,12 @@
 import mongoose, { Connection, ConnectOptions} from "mongoose";
-import { CUSTOMER_DATABASE, CUSTOMER_OTP, DATABASE_CONNECTION, MENU, ORDERS, REVIEWS } from "./database-provider.constants";
+import { CUSTOMER_DATABASE, CUSTOMER_OTP, DATABASE_CONNECTION, MENU, ORDERS, REVIEWS, SHOPEMAILS } from "./database-provider.constants";
 import { ConfigService } from "@nestjs/config";
 import { ICustomer, customerSchema } from "src/customer/model/customer-model.model";
 import { ICustomerOtp, customerOtpSchema } from "src/customer/model/customer-otp.model";
 import { IMenu, MenuSchema } from "src/menu/model/menu.model";
 import { ICustomerOrderData, customerOrderDataSchema } from "src/order/model/order.model";
 import { IShop, ShopSchema } from "src/review/model/shop-reviews-model.model";
+import { IShopEmails, shopEmails } from "src/customer/model/shop-emails.model";
 require("dotenv").config();
 
 const MONGO_URL = process.env.MONGO_URL
@@ -96,6 +97,19 @@ export const databaseProvider = [{
             )
             review.syncIndexes();
             return review;
+        },
+        inject: [DATABASE_CONNECTION, ConfigService]
+    },
+    {
+        provide: SHOPEMAILS,
+        useFactory: (connection: mongoose.Connection) => {
+            const shoPEmails = connection.model<IShopEmails>(
+                "streetnosheryshopemails",
+                shopEmails,
+                "shop_emails"
+            )
+            shoPEmails.syncIndexes();
+            return shoPEmails;
         },
         inject: [DATABASE_CONNECTION, ConfigService]
     }

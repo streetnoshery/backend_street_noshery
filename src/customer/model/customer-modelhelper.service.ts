@@ -1,9 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { FilterQuery, Model, UpdateQuery } from "mongoose";
-import { CUSTOMER_DATABASE, CUSTOMER_OTP } from "src/database/database-provider.constants";
+import { CUSTOMER_DATABASE, CUSTOMER_OTP, SHOPEMAILS } from "src/database/database-provider.constants";
 import { ICustomer } from "./customer-model.model";
 import { inject } from "dd-trace";
 import { ICustomerOtp } from "./customer-otp.model";
+import { IShopEmails } from "./shop-emails.model";
 
 @Injectable()
 export class StreetNosheryCustomerModelHelper {
@@ -12,7 +13,10 @@ export class StreetNosheryCustomerModelHelper {
         private customerModelhelper: Model<ICustomer>,
 
         @Inject(CUSTOMER_OTP)
-        private customerOtpModelHelper: Model<ICustomerOtp>
+        private customerOtpModelHelper: Model<ICustomerOtp>,
+
+        @Inject(SHOPEMAILS)
+        private shopEmails: Model<IShopEmails>
     ) {
 
     }
@@ -38,5 +42,9 @@ export class StreetNosheryCustomerModelHelper {
 
     async getOtp(filter: FilterQuery<ICustomerOtp>) {
         return this.customerOtpModelHelper.findOne(filter).lean();
+    }
+
+    async getEmail(filter: FilterQuery<IShopEmails>) {
+        return this.shopEmails.findOne(filter).lean();
     }
 }

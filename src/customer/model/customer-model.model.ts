@@ -19,7 +19,8 @@ export interface ICustomer extends Document {
     status: OnboardingStages;
     customerId: string
     isEmailNotificationEnable: boolean;
-    stars: number
+    stars: number,
+    isRegisterForShop: boolean
 }
 
 // Define Customer Schema
@@ -37,5 +38,6 @@ export const customerSchema = new Schema<ICustomer>({
     status: { type: String, enum: Object.values(OnboardingStages), required: true },
     customerId: { type: String, required: true },
     isEmailNotificationEnable: { type: Boolean, default: true },
-    stars: {type: Number}
+    stars: {type: Number},
+    isRegisterForShop: {type: Boolean, default: false}
 }, { timestamps: true }); // Adds createdAt & updatedAt fields automatically
