@@ -12,7 +12,7 @@ interface IOrderItem {
 
 export interface ICustomerOrderData extends Document {
     customerId: string;
-    shopId: string;
+    shopId: number;
     orderItems: IOrderItem[];
     orderTrackId: string;
     orderStatus: CustomerOrderStatus;
@@ -42,7 +42,7 @@ const OrderItemSchema = new Schema<IOrderItem>({
 
 export const customerOrderDataSchema = new Schema<ICustomerOrderData>({
     customerId: { type: String, required: true },
-    shopId: { type: String, required: true },
+    shopId: { type: Number, required: true },
     orderItems: { type: [OrderItemSchema], required: true },
     orderTrackId: { type: String, required: true},
     orderStatus: { type: String, enum: Object.values(CustomerOrderStatus), required: true },

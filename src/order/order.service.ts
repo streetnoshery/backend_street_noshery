@@ -40,7 +40,8 @@ export class StreetnosheryOrderService {
         orderStatus: CustomerOrderStatus.PLACED,
         orderPlacedAt: new Date(),
         isOrderPlaced: true,
-        paymentStatus: PaymentStatus.INITIATED,
+        paymentStatus: PaymentStatus.SUCCESS,
+        isPaymentDone: true
       };
       const res = await this.orderModelHelperService.createOrupdateOrder(
         { orderTrackId: orderTrackingId },
@@ -76,13 +77,16 @@ export class StreetnosheryOrderService {
         orderConfirmedAt: new Date(),
         orderStatus: CustomerOrderStatus.CONFIRMED,
       };
-      const confirmOrder =
-        await this.orderModelHelperService.createOrupdateOrder(
+      console.log(`${prefix} (createOrder) Order query: ${JSON.stringify(order)}`);
+      await this.orderModelHelperService.createOrupdateOrder(
           order,
-          updateobje,
+          updateobje
         );
+
+      const confirmOrder = await this.orderModelHelperService.getPastOrders({orderTrackId: order.orderTrackId})
+        
       console.log(
-        `${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId}`,
+        `${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
       return confirmOrder;
     } catch (error) {
@@ -98,11 +102,13 @@ export class StreetnosheryOrderService {
         order.orderStatus,
       );
 
-      const confirmOrder =
-        await this.orderModelHelperService.createOrupdateOrder(
+      await this.orderModelHelperService.createOrupdateOrder(
           { orderTrackId, shopId, customerId },
           updateobje,
         );
+      
+      const confirmOrder = await this.orderModelHelperService.getPastOrders({orderTrackId});
+        
       console.log(
         `${prefix} (updateOrders) Order confirmed for TrackId: ${orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
@@ -132,14 +138,16 @@ export class StreetnosheryOrderService {
         return {
           orderCancelledAt: new Date(),
           isorderCancelled: true,
+          isOrderInProgress: false
         };
     }
   }
 
   async getOrderByShopId(shopId: number) {
     try {
+      console.log(shopId);
         const res = await this.orderModelHelperService.getPastOrders({
-            shopId,
+            shopId
         });
         console.log(`${prefix} (getOrderByShopId) Response: ${JSON.stringify(res)}`);
         return res;

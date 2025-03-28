@@ -23,8 +23,8 @@ export class CustomerOrderFTDto {
     @IsString()
     customerId: string;
 
-    @IsString()
-    shopId: string;
+    @IsNumber()
+    shopId: number;
 
     @IsArray()
     @ValidateNested({ each: true })
@@ -39,8 +39,8 @@ export class CustomerOrderDto {
     @IsString()
     customerId: string;
 
-    @IsString()
-    shopId: string;
+    @IsNumber()
+    shopId: number;
 }
 
 export class UpdateOrderDto {
@@ -50,8 +50,8 @@ export class UpdateOrderDto {
     @IsString()
     customerId: string;
 
-    @IsString()
-    shopId: string;
+    @IsNumber()
+    shopId: number;
 
     @IsEnum(CustomerOrderStatus)
     orderStatus: CustomerOrderStatus;
