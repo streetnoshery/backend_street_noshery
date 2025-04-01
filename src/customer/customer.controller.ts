@@ -63,6 +63,7 @@ export class StreetNosheryCustomerController {
         try {
             console.log(`${prefix} (verifyOtp) Initiating || data: ${JSON.stringify(body)}`);
             const res = await this.streetNosheryCustomerService.verifyOtp(body);
+            return res;
         } catch (error) {
             console.log(`${prefix} (verifyOtp) Error: ${JSON.stringify(error)}`);
             throw error;

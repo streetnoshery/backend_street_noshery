@@ -127,7 +127,7 @@ export class StreetNosheryCustomerService {
             if (this.isExpiredOtp(updatedAt)) {
                 throw new BadRequestException('Expired OTP');
             }
-            return
+            return "ok"
         } catch (error) {
             console.log(`${prefix} (verifyOtp) Error: ${JSON.stringify(error)}`);
             throw error;

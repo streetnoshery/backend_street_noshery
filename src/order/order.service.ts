@@ -107,7 +107,7 @@ export class StreetnosheryOrderService {
           updateobje,
         );
       
-      const confirmOrder = await this.orderModelHelperService.getPastOrders({orderTrackId});
+      const confirmOrder = await this.orderModelHelperService.getPastOrders({shopId});
         
       console.log(
         `${prefix} (updateOrders) Order confirmed for TrackId: ${orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
