@@ -1,6 +1,20 @@
+# Use the official Node.js image
 FROM node:20
-WORKDIR src
-COPY package.json package-lock.json ./
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the project files
+COPY . .
+
+# Expose the port your NestJS app runs on
 EXPOSE 3000
+
+# Start the application
 CMD ["npm", "run", "start"]
