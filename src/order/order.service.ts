@@ -3,9 +3,10 @@ import { StreetNosheryOrderModelHelperService } from './model/order-modelhelper.
 import {
   CustomerOrderDto,
   CustomerOrderFTDto,
+  OrderItemDto,
   UpdateOrderDto,
 } from './dto/order.dto';
-import { CustomerOrderStatus, PaymentStatus } from './enums/order.enum';
+import { CustomerOrderStatus, IOrderStatusFlags, OREDER_STATUS_ID, PaymentStatus, STATUS_FLAGS, orderTitle } from './enums/order.enum';
 import { UpdateQuery } from 'mongoose';
 import { ICustomerOrderData } from './model/order.model';
 
@@ -32,6 +33,7 @@ export class StreetnosheryOrderService {
   async createOrderFT(order: CustomerOrderFTDto) {
     try {
       const orderTrackingId = this.generateOrderTrackId();
+      const totalAmount = this.getOrderAmount(order.orderItems)
       const updateObject: UpdateQuery<ICustomerOrderData> = {
         customerId: order.customerId,
         shopId: order.shopId,
@@ -41,7 +43,8 @@ export class StreetnosheryOrderService {
         orderPlacedAt: new Date(),
         isOrderPlaced: true,
         paymentStatus: PaymentStatus.SUCCESS,
-        isPaymentDone: true
+        isPaymentDone: true,
+        paymentAmount: totalAmount
       };
       const res = await this.orderModelHelperService.createOrupdateOrder(
         { orderTrackId: orderTrackingId },
@@ -57,6 +60,14 @@ export class StreetnosheryOrderService {
       console.log(`${prefix} (createOrderFT) Error: ${JSON.stringify(error)}`);
       throw error;
     }
+  }
+
+  getOrderAmount(orderItems: OrderItemDto[]) {
+    let amount = 0;
+    for (let price of orderItems) {
+      amount += Number(price)
+    }
+    return amount.toString();
   }
 
   generateOrderTrackId() {
@@ -79,12 +90,12 @@ export class StreetnosheryOrderService {
       };
       console.log(`${prefix} (createOrder) Order query: ${JSON.stringify(order)}`);
       await this.orderModelHelperService.createOrupdateOrder(
-          order,
-          updateobje
-        );
+        order,
+        updateobje
+      );
 
-      const confirmOrder = await this.orderModelHelperService.getPastOrders({orderTrackId: order.orderTrackId})
-        
+      const confirmOrder = await this.orderModelHelperService.getPastOrders({ orderTrackId: order.orderTrackId })
+
       console.log(
         `${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
@@ -103,12 +114,12 @@ export class StreetnosheryOrderService {
       );
 
       await this.orderModelHelperService.createOrupdateOrder(
-          { orderTrackId, shopId, customerId },
-          updateobje,
-        );
-      
-      const confirmOrder = await this.orderModelHelperService.getPastOrders({shopId});
-        
+        { orderTrackId, shopId, customerId },
+        updateobje,
+      );
+
+      const confirmOrder = await this.orderModelHelperService.getPastOrders({ shopId });
+
       console.log(
         `${prefix} (updateOrders) Order confirmed for TrackId: ${orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
@@ -146,14 +157,119 @@ export class StreetnosheryOrderService {
   async getOrderByShopId(shopId: number) {
     try {
       console.log(shopId);
-        const res = await this.orderModelHelperService.getPastOrders({
-            shopId
-        });
-        console.log(`${prefix} (getOrderByShopId) Response: ${JSON.stringify(res)}`);
-        return res;
-      } catch (error) {
-        console.log(`${prefix} (getOrderByShopId) Error: ${JSON.stringify(error)}`);
-        throw error;
+      const res = await this.orderModelHelperService.getPastOrders({
+        shopId
+      });
+      console.log(`${prefix} (getOrderByShopId) Response: ${JSON.stringify(res)}`);
+      return res;
+    } catch (error) {
+      console.log(`${prefix} (getOrderByShopId) Error: ${JSON.stringify(error)}`);
+      throw error;
+    }
+  }
+
+  async getStatus(orderTrackId: string) {
+    try {
+      const order = await this.orderModelHelperService.getPastOrders({ orderTrackId });
+
+      const { orderStatus, orderConfirmedAt, orderOutForDeliveryAt, orderDeliveredAt, orderCancelledAt, orderFailedAt, paymentAmount, paymentStatus, isOrderPlaced, isOrderOutForDelivery, isOrderConfirmed, isOrderDelivered, isOrderFailed, isorderCancelled} = order[0];
+
+      const getFlags = this.flags(orderStatus);
+
+      console.log(`${prefix} (getStatus) flags for orderTrackId: ${orderTrackId} | flags: ${JSON.stringify(getFlags)}`);
+
+      const statusStack = this.getStatusStack(getFlags, {
+        orderPlaced: orderConfirmedAt,
+        outForDelivery: orderOutForDeliveryAt,
+        delivered: orderDeliveredAt,
+        orderCancelledAt,
+        orderFailedAt
+      });
+
+      const response = {
+        flags: getFlags,
+        statusStack,
+        paymentAmount,
+        paymentStatus,
+        orderTrackId,
+        orderStatus, 
+        orderConfirmedAt, 
+        orderOutForDeliveryAt, 
+        orderDeliveredAt, 
+        orderCancelledAt, 
+        orderFailedAt,
+        isOrderPlaced, 
+        isOrderOutForDelivery, 
+        isOrderConfirmed, 
+        isOrderDelivered, 
+        isOrderFailed, 
+        isorderCancelled
       }
-}
+
+      console.log(`${prefix} (getStatus) response for orderTrackId: ${orderTrackId} | ${JSON.stringify(response)}`);
+    } catch (error) {
+      console.log(`${prefix} (getStatus) Error: ${JSON.stringify(error)}`);
+      throw error;
+    }
+  }
+
+  flags(status: CustomerOrderStatus) {
+    try {
+      const flags: IOrderStatusFlags = {
+        orderPlaced: STATUS_FLAGS.NOT_INITIATED,
+        outForDelivery: STATUS_FLAGS.NOT_INITIATED,
+        delivered: STATUS_FLAGS.NOT_INITIATED
+      }
+
+
+      if (!status) return flags;
+
+      if ([CustomerOrderStatus.PLACED, CustomerOrderStatus.CONFIRMED].includes(status)) {
+        flags.orderPlaced = STATUS_FLAGS.IN_PROGRESS
+        if ([CustomerOrderStatus.FAILED, CustomerOrderStatus.CANCELLED].includes(status)) {
+          flags.orderPlaced = STATUS_FLAGS.FAILED
+        }
+      }
+      else if ([CustomerOrderStatus.OUT_FOR_DELIVERY].includes(status)) {
+        flags.orderPlaced = STATUS_FLAGS.SUCCESS
+        flags.outForDelivery = STATUS_FLAGS.IN_PROGRESS
+        if ([CustomerOrderStatus.FAILED, CustomerOrderStatus.CANCELLED].includes(status)) {
+          flags.outForDelivery = STATUS_FLAGS.FAILED
+        }
+      }
+      else if ([CustomerOrderStatus.DELIVERED].includes(status)) {
+        flags.orderPlaced = STATUS_FLAGS.SUCCESS
+        flags.outForDelivery = STATUS_FLAGS.SUCCESS
+        flags.delivered = STATUS_FLAGS.SUCCESS
+        if ([CustomerOrderStatus.FAILED, CustomerOrderStatus.CANCELLED].includes(status)) {
+          flags.delivered = STATUS_FLAGS.FAILED
+        }
+      }
+
+      return flags;
+    } catch (error) {
+      console.log(`${prefix} (orderStatus) Error: ${JSON.stringify(error)}`);
+      throw error;
+    }
+  }
+
+  getStatusStack(flags: IOrderStatusFlags, timeStamps: any) {
+    const statusStack = [];
+    for (let [id, status] of Object.entries(flags)) {
+      const stackObj = {
+        id,
+        status,
+        title: orderTitle[id as OREDER_STATUS_ID],
+        timeStamp: timeStamps[id]
+      }
+
+      if (status == STATUS_FLAGS.FAILED) {
+        stackObj.timeStamp = timeStamps?.orderCancelledAt ?? timeStamps?.orderFailedAt
+      }
+
+      statusStack.push(stackObj);
+    }
+
+    return statusStack;
+  }
 }

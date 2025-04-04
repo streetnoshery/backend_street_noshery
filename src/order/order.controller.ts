@@ -81,6 +81,25 @@ export class StreetNosheryOrderController {
     }
   }
 
+  @Get('status')
+  async getOrderStatus(@Query("orderTrackId") orderTrackId: string) {
+    try {
+      console.log(
+        `${prefix} (getOrderStatus) initiating get order status for orderTrackId: ${orderTrackId}`,
+      );
+      const res = await this.orderService.getStatus(orderTrackId);
+      console.log(
+        `${prefix} (getOrderStatus) Response get order status for orderTrackId: ${orderTrackId} | ${JSON.stringify(res)}`,
+      );
+      return res;
+    } catch (error) {
+      console.log(
+        `${prefix} (getOrderStatus) Error: ${JSON.stringify(error)}`,
+      );
+      throw error;
+    }
+  }
+
   @Get('order-by-shopId')
   async getOrderBuShopId(@Query('shopId') shopId: number) {
     try {

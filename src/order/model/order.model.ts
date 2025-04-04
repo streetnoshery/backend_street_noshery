@@ -21,6 +21,7 @@ export interface ICustomerOrderData extends Document {
     paymentStatus: PaymentStatus;
     isPaymentDone: boolean;
     paymentId: string;
+    paymentAmount: string,
     orderConfirmedAt?: Date;
     isOrderConfirmed: boolean;
     orderOutForDeliveryAt?: Date;
@@ -30,6 +31,8 @@ export interface ICustomerOrderData extends Document {
     orderCancelledAt?: Date;
     isorderCancelled: boolean;
     isOrderInProgress: boolean;
+    orderFailedAt: Date;
+    isOrderFailed: boolean;
 }
 
 const OrderItemSchema = new Schema<IOrderItem>({
@@ -51,6 +54,7 @@ export const customerOrderDataSchema = new Schema<ICustomerOrderData>({
     paymentStatus: { type: String, enum: Object.values(PaymentStatus), required: true },
     isPaymentDone: {type: Boolean, default: false},
     paymentId: {type: String},
+    paymentAmount: {type: String},
     orderConfirmedAt: { type: Date },
     isOrderConfirmed: {type: Boolean, default: false},
     orderOutForDeliveryAt: { type: Date },
@@ -59,7 +63,9 @@ export const customerOrderDataSchema = new Schema<ICustomerOrderData>({
     isOrderDelivered: {type: Boolean, default: false},
     orderCancelledAt: { type: Date },
     isorderCancelled: {type: Boolean, default: false},
-    isOrderInProgress: {type: Boolean, default: true}
+    isOrderInProgress: {type: Boolean, default: true},
+    orderFailedAt: { type: Date },
+    isOrderFailed: {type: Boolean, default: false}
 }, { timestamps: true });
 
 
