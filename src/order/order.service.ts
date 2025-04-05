@@ -207,6 +207,8 @@ export class StreetnosheryOrderService {
       }
 
       console.log(`${prefix} (getStatus) response for orderTrackId: ${orderTrackId} | ${JSON.stringify(response)}`);
+
+      return response;
     } catch (error) {
       console.log(`${prefix} (getStatus) Error: ${JSON.stringify(error)}`);
       throw error;
