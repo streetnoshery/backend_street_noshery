@@ -26,4 +26,45 @@ export class StreetNosheryMenuModelHelperService {
     async getMenuWithShopId(shopId: string) {
         return this.menuModel.findOne({shopId}).lean();
     }
+
+    async updateFoodReview(shopId: number, foodIds: number[], rating: number) {
+        return this.menuModel.updateOne(
+            { shopId: shopId },
+            [
+              {
+                $set: {
+                  menu: {
+                    $map: {
+                      input: "$menu",
+                      as: "item",
+                      in: {
+                        $cond: [
+                          { $in: ["$$item.foodId", foodIds] },
+                          {
+                            $mergeObjects: [
+                              "$$item",
+                              {
+                                ratingCount: { $add: ["$$item.ratingCount", 1] },
+                                rating: {
+                                  $divide: [
+                                    { $add: [
+                                      { $multiply: ["$$item.rating", "$$item.ratingCount"] },
+                                      rating
+                                    ]},
+                                    { $add: ["$$item.ratingCount", 1] }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "$$item"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          );
+    }
 }

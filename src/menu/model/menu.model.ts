@@ -6,6 +6,7 @@ export interface IDish {
     price: string;
     rating: number;
     foodId: number;
+    ratingCount: number
 }
 
 export interface IMenu extends Document {
@@ -18,7 +19,8 @@ export const DishSchema = new Schema({
     description: { type: String, required: true },
     price: { type: String, required: true },
     rating: { type: Number, required: true },
-    foodId: { type: Number, required: true }
+    foodId: { type: Number, required: true },
+    ratingCount:  { type: Number, required: true, default: 0}
 }, { _id: false });
 
 export const MenuSchema = new Schema({

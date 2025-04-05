@@ -41,4 +41,17 @@ export class StreetNosheryReviewController {
             throw error;
         }
     }
+
+    @Post("create-food-review")
+    async createFoodReview(@Body() body: ReviewsDto) {
+        try {
+            console.log(`${prefix} (createFoodReview) Initiating || body: ${JSON.stringify(body)}`);
+            const res = await this.streetNosheryReviewService.updateFoodReviews(body);
+            console.log(`${prefix} (createFoodReview) Successful response: ${JSON.stringify(res)}`);
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (createFoodReview) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
 }

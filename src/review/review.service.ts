@@ -1,13 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { ReviewsDto } from "./dto/review.dto";
 import { StreetNosheryReviewModelHelperService } from "./model/review-helper.service";
+import { StreetNosheryMenuModelHelperService } from "src/menu/model/menu-modelhelper.service";
 
 const prefix = "STREET_NOSHERY_REVIEW_SERVICE"
 
 @Injectable()
 export class StreetNosheryReviewService {
     constructor(
-        private readonly streetNosheryReviewModelHelperService: StreetNosheryReviewModelHelperService
+        private readonly streetNosheryReviewModelHelperService: StreetNosheryReviewModelHelperService,
+        private readonly menuModelHelperService: StreetNosheryMenuModelHelperService
     ) { }
 
     async createOrUpdateReview(body: ReviewsDto) {
@@ -50,6 +52,18 @@ export class StreetNosheryReviewService {
             };
         } catch (error) {
             console.log(`${prefix} (reviews) Error: ${JSON.stringify(error)} `);
+            throw error;
+        }
+    }
+
+    async updateFoodReviews(body: ReviewsDto) {
+        try {
+            const { shopId, stars, foodId} = body;
+
+            const res = await this.menuModelHelperService.updateFoodReview(shopId, foodId, stars);
+            return res;
+        } catch (error) {
+            console.log(`${prefix} (createOrUpdateReview) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
