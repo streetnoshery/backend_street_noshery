@@ -99,7 +99,7 @@ export class StreetnosheryOrderService {
       console.log(
         `${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
-      return confirmOrder;
+      return confirmOrder[0];
     } catch (error) {
       console.log(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
       throw error;
