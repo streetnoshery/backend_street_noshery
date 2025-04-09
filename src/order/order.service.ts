@@ -103,7 +103,7 @@ export class StreetnosheryOrderService {
       console.log(
         `${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
-      return confirmOrder[0];
+      return confirmOrder;
     } catch (error) {
       console.log(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
       throw error;
@@ -127,7 +127,7 @@ export class StreetnosheryOrderService {
       console.log(
         `${prefix} (updateOrders) Order confirmed for TrackId: ${orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
-      return confirmOrder[0];
+      return confirmOrder;
     } catch (error) {
       console.log(`${prefix} (updateOrders) Error: ${JSON.stringify(error)}`);
       throw error;
