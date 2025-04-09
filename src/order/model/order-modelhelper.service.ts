@@ -17,4 +17,8 @@ export class StreetNosheryOrderModelHelperService {
     async getPastOrders(filter: FilterQuery<ICustomerOrderData>) {
         return this.streetNosheryOrdersmodel.find(filter).sort({ orderPlacedAt: -1 }).exec();
     }
+
+    async getOrderWithTrackId(filter: FilterQuery<ICustomerOrderData>)  {
+        return this.streetNosheryOrdersmodel.findOne(filter).lean();
+    }
 }

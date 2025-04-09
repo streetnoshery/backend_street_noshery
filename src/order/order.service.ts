@@ -98,7 +98,7 @@ export class StreetnosheryOrderService {
         updateobje
       );
 
-      const confirmOrder = await this.orderModelHelperService.getPastOrders({ orderTrackId: order.orderTrackId })
+      const confirmOrder = await this.orderModelHelperService.getOrderWithTrackId({ orderTrackId: order.orderTrackId })
 
       console.log(
         `${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
@@ -122,12 +122,12 @@ export class StreetnosheryOrderService {
         updateobje,
       );
 
-      const confirmOrder = await this.orderModelHelperService.getPastOrders({ shopId });
+      const confirmOrder = await this.orderModelHelperService.getOrderWithTrackId({ orderTrackId });
 
       console.log(
         `${prefix} (updateOrders) Order confirmed for TrackId: ${orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
-      return confirmOrder;
+      return confirmOrder[0];
     } catch (error) {
       console.log(`${prefix} (updateOrders) Error: ${JSON.stringify(error)}`);
       throw error;
