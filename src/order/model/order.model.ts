@@ -33,6 +33,7 @@ export interface ICustomerOrderData extends Document {
     isOrderInProgress: boolean;
     orderFailedAt: Date;
     isOrderFailed: boolean;
+    razorpayOrderId: string;
 }
 
 const OrderItemSchema = new Schema<IOrderItem>({
@@ -65,7 +66,8 @@ export const customerOrderDataSchema = new Schema<ICustomerOrderData>({
     isorderCancelled: {type: Boolean, default: false},
     isOrderInProgress: {type: Boolean, default: true},
     orderFailedAt: { type: Date },
-    isOrderFailed: {type: Boolean, default: false}
+    isOrderFailed: {type: Boolean, default: false},
+    razorpayOrderId: {type: String}
 }, { timestamps: true });
 
 

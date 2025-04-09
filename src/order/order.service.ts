@@ -44,7 +44,9 @@ export class StreetnosheryOrderService {
         isOrderPlaced: true,
         paymentStatus: PaymentStatus.SUCCESS,
         isPaymentDone: true,
-        paymentAmount: totalAmount
+        paymentAmount: totalAmount,
+        razorpayOrderId: order.razorpayOrderId,
+        paymentId: order.paymentId
       };
       const res = await this.orderModelHelperService.createOrupdateOrder(
         { orderTrackId: orderTrackingId },

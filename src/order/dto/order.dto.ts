@@ -26,6 +26,12 @@ export class CustomerOrderFTDto {
     @IsNumber()
     shopId: number;
 
+    @IsString()
+    paymentId: string;
+
+    @IsString()
+    razorpayOrderId: string;
+
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => OrderItemDto)
