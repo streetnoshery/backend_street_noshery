@@ -8,6 +8,7 @@ interface IOrderItem {
     price: string;
     rating: number;
     foodId: number;
+    count: number;
 }
 
 export interface ICustomerOrderData extends Document {
@@ -41,7 +42,8 @@ const OrderItemSchema = new Schema<IOrderItem>({
     description: { type: String, required: true },
     price: { type: String, required: true },
     rating: { type: Number, required: true },
-    foodId: { type: Number, required: true }
+    foodId: { type: Number, required: true },
+    count: { type: Number, required: true }
 }, { _id: false });
 
 export const customerOrderDataSchema = new Schema<ICustomerOrderData>({

@@ -17,6 +17,9 @@ export class OrderItemDto {
 
     @IsNumber()
     foodId: number;
+
+    @IsNumber()
+    count: number;
 }
 
 export class CustomerOrderFTDto {

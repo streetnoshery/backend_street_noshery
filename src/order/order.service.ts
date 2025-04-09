@@ -66,8 +66,10 @@ export class StreetnosheryOrderService {
 
   getOrderAmount(orderItems: OrderItemDto[]) {
     let amount = 0;
-    for (let price of orderItems) {
-      amount += Number(price)
+    for (let item of orderItems) {
+      const itemCount = item.count
+      const totalItemPrice = Number(item.price) * itemCount;
+      amount += Number(totalItemPrice)
     }
     return amount.toString();
   }
