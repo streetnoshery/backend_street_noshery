@@ -29,7 +29,7 @@ export class StreetNosheryCustomerModelHelper {
     }
 
     async getUser(filter: FilterQuery<ICustomer>) {
-        return this.customerModelhelper.findOne(filter);
+        return this.customerModelhelper.findOne(filter).lean();
     }
 
     async otp(filter: FilterQuery<ICustomerOtp>, update: UpdateQuery<ICustomerOtp>) {

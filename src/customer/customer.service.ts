@@ -6,13 +6,15 @@ import * as moment from 'moment';
 import { OnboardingStages } from "./enums/customer.enums";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { EventHnadlerEnums } from "src/common/events/enums";
+import { NotificationService } from "src/notification/notification.service";
 
 const prefix = "[STREET_NOSHERY_CUSTOMER_SERVICE]"
 @Injectable()
 export class StreetNosheryCustomerService {
     constructor(
         private readonly streetNosheryCustomerModelhelper: StreetNosheryCustomerModelHelper,
-        private readonly emitterService: EventEmitter2
+        private readonly emitterService: EventEmitter2,
+        private readonly smsService: NotificationService
     ) { }
 
     async getUser(mobileNumber: string) {
@@ -42,7 +44,7 @@ export class StreetNosheryCustomerService {
             }
             else if (userDetails?.status == OnboardingStages.MOBILE_VERIFICATION) {
                 const { email, password } = body;
-                const isRegisterForShop = await this.streetNosheryCustomerModelhelper.getEmail({email});
+                const isRegisterForShop = await this.streetNosheryCustomerModelhelper.getEmail({ email });
                 console.log(`${prefix} (createUser) is user going to register for shop: ${JSON.stringify(isRegisterForShop)}`)
                 updateObj = {
                     email,
@@ -79,40 +81,51 @@ export class StreetNosheryCustomerService {
     async generateOtp(body: StreetNosheryGenerateOtp) {
         try {
             const { mobileNumber, reason } = body;
-            const otpData = await this.streetNosheryCustomerModelhelper.getOtp(body);
             const MAX_RETRIALS = 5;
 
-            let res;
+            const otpData = await this.streetNosheryCustomerModelhelper.getOtp(body);
+
+            // Check if OTP data exists and retrials exceeded
+            if (otpData && otpData.count >= MAX_RETRIALS && !this.isExpiredOtp(otpData.updatedAt)) {
+                console.log(`${prefix} (generateOtp) Failed to generate OTP: ${JSON.stringify(otpData)}`);
+                throw new BadRequestException('Limit Exceeded');
+            }
+
+            let generatedOtp = this.generateRandomOtp();
+            let updateQuery;
+
             if (otpData) {
-                const { updatedAt } = otpData;
-                if (this.isExpiredOtp(updatedAt)) {
-                    const generatedOtp = this.generateRandomOtp();
-                    const updateQuery = { otp: generatedOtp, count: 1 }
-                    res = await this.streetNosheryCustomerModelhelper.otp({ mobileNumber, reason }, updateQuery);
-                    console.log(`${prefix} (generateOtp) Successful || Response: ${JSON.stringify(res)}`);
-                    return;
+                if (this.isExpiredOtp(otpData.updatedAt)) {
+                    // OTP expired: generate new OTP and reset count
+                    updateQuery = { otp: generatedOtp, count: 1 };
+                } else {
+                    // OTP not expired: generate new OTP and increment count
+                    updateQuery = { otp: generatedOtp, $inc: { count: 1 } };
                 }
+            } else {
+                // No OTP data: generate new OTP and set count to 1
+                updateQuery = { otp: generatedOtp, count: 1 };
             }
 
-            if (otpData && otpData?.count >= MAX_RETRIALS) {
-                console.log(`${prefix} (generateOtp) Failed to generate Otp: ${JSON.stringify(otpData)}`);
-                throw new BadRequestException('Limit Exceed');
-            }
+            const res = await this.streetNosheryCustomerModelhelper.otp({ mobileNumber, reason }, updateQuery);
 
-            const generatedOtp = this.generateRandomOtp();
-            const updateQuery = { otp: generatedOtp, $inc: { count: 1 } } // Increment count by 1
-            res = await this.streetNosheryCustomerModelhelper.otp({ mobileNumber, reason }, updateQuery);
+            const user = await this.streetNosheryCustomerModelhelper.getUser({ mobileNumber });
+
+            if (user.email) {
+                const email = user.email;
+                await this.smsService.sendOtpViaEmail(email, generatedOtp);
+            } else {
+                await this.smsService.sendSMSTwilio(generatedOtp, mobileNumber);
+            }
 
             console.log(`${prefix} (generateOtp) Successful || Response: ${JSON.stringify(res)}`);
-            /* TODO 
-            Function to send OTP on SMS
-            */
             return "ok";
         } catch (error) {
             console.log(`${prefix} (generateOtp) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
+
 
     async verifyOtp(body: StreetNosheryGenerateOtp) {
         try {
@@ -179,7 +192,7 @@ export class StreetNosheryCustomerService {
                     "address.shopId": shopId
                 }
             };
-            
+
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ customerId }, createUser);
             const { _id, __v, ...result } = res;
             this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
@@ -192,8 +205,8 @@ export class StreetNosheryCustomerService {
 
     async updateUserDetails(body: UpdateCustomerDetailsDto) {
         try {
-            const {customerId, ...obj} = body;
-            
+            const { customerId, ...obj } = body;
+
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ customerId }, obj);
             const { _id, __v, ...result } = res;
             this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })

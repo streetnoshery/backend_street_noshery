@@ -10,6 +10,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { StreetNosheryMenuModule } from './menu/menu.module';
 import { StreetNosheryOrderModule } from './order/order.module';
 import { StreetNosheryReviewModule } from './review/review.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { StreetNosheryReviewModule } from './review/review.module';
     StreetNosheryFirebaseModule,
     StreetNosheryMenuModule,
     StreetNosheryOrderModule,
-    StreetNosheryReviewModule
+    StreetNosheryReviewModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [AppService],
