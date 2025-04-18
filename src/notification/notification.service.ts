@@ -14,7 +14,7 @@ export class NotificationService {
 
     async sendSMSTwilio(otp?: string, mobileNumber?: string) {
         try {
-            const client = twilio("", "");
+            const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
             const response = await client.messages.create({
                 body: `${otp}`,
                 from: '+12314987096', // Replace with your Twilio number
