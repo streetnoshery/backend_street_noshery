@@ -23,6 +23,7 @@ export class StreetNosheryCreateCustomer {
     userName: string;
 
     @IsString()
+    @IsOptional()
     firstLine: string;
 
     @IsString()
@@ -30,6 +31,7 @@ export class StreetNosheryCreateCustomer {
     secondLine: string;
 
     @IsNumber()
+    @IsOptional()
     shopId: number;
 }
 
