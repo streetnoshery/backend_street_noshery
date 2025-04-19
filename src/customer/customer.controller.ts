@@ -12,7 +12,6 @@ export class StreetNosheryCustomerController {
     ) {}
 
     @Get()
-    @UseGuards(AuthGuard)
     async getUser(
         @Query("mobileNumber") mobileNumber: string
     ) {
