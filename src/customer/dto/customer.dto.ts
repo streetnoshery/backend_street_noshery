@@ -1,17 +1,6 @@
 import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString, Length, Matches, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
-class Address {
-    @IsString()
-    firstLine: string;
-
-    @IsString()
-    @IsOptional()
-    secondLine: string;
-
-    @IsNumber()
-    shopId: number;
-}
 export class StreetNosheryCreateCustomer {
     @IsNumberString()
     @Length(10, 10)
@@ -33,10 +22,15 @@ export class StreetNosheryCreateCustomer {
     @IsOptional()
     userName: string;
 
-    @ValidateNested()
-    @Type(() => Address)
+    @IsString()
+    firstLine: string;
+
+    @IsString()
     @IsOptional()
-    address: Address; // Fixed naming (camelCase)
+    secondLine: string;
+
+    @IsNumber()
+    shopId: number;
 }
 
 export class StreetNosheryEnableNotification {

@@ -54,9 +54,13 @@ export class StreetNosheryCustomerService {
                 }
             }
             else if (userDetails?.status == OnboardingStages.EMAIL_VERIFICATION) {
-                const { address, userName } = body;
+                const { firstLine, secondLine, shopId, userName } = body;
                 updateObj = {
-                    address,
+                    address: {
+                        firstLine,
+                        secondLine,
+                        shopId
+                    },
                     userName,
                     status: OnboardingStages.USER_DETAILS_VERIFICATION,
                 }
