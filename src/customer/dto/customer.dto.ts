@@ -30,9 +30,9 @@ export class StreetNosheryCreateCustomer {
     @IsOptional()
     secondLine: string;
 
-    @IsNumber()
     @IsOptional()
-    shopId: number;
+    @IsString()
+    shopId: string;
 }
 
 export class StreetNosheryEnableNotification {

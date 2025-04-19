@@ -59,7 +59,7 @@ export class StreetNosheryCustomerService {
                     address: {
                         firstLine,
                         secondLine,
-                        shopId
+                        shopId: Number(shopId)
                     },
                     userName,
                     status: OnboardingStages.USER_DETAILS_VERIFICATION,
