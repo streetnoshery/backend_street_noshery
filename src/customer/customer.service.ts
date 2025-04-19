@@ -111,7 +111,7 @@ export class StreetNosheryCustomerService {
 
             const user = await this.streetNosheryCustomerModelhelper.getUser({ mobileNumber });
 
-            if (user.email) {
+            if (user?.email) {
                 const email = user.email;
                 await this.smsService.sendOtpViaEmail(email, generatedOtp);
             } else {
