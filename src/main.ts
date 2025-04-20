@@ -10,13 +10,16 @@ import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import mongoose from 'mongoose';
 // import { StreetNosheryRequestInterceptor } from './common/decryption.interseptor';
-const {initializeFirebaseApp} = require("./common/firebase/firebase_utils");
+const { initializeFirebaseApp } = require("./common/firebase/firebase_utils");
+import * as express from 'express';
+
+
 
 function formatErrorText(err: any): string {
   let errText = 'Uncaught Exception';
-  if(err?.response?.data) {
+  if (err?.response?.data) {
     errText += JSON.stringify(err?.response.data)
-  }else {
+  } else {
     errText += err?.message + err?.stack
   }
 
@@ -39,6 +42,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new StandardResponseInterceptor());
   initializeFirebaseApp();
 
+  app.use(express.json()); // ✅ Parse application/json
+  app.use(express.urlencoded({ extended: true }));
+
   app.use((req, res, next) => {
     console.log('Request Body:', req.body);
     next();
@@ -47,7 +53,7 @@ async function bootstrap() {
     transform: true
   }));
 
-  useContainer(app.select(AppModule), {fallbackOnErrors: true});
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   process.on('unhandledRejection', (err: any) => {
     const errorText: string = formatErrorText(err);
