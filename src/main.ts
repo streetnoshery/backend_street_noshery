@@ -40,9 +40,9 @@ async function bootstrap() {
   initializeFirebaseApp();
 
 
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true
-  }));
+  // app.useGlobalPipes(new ValidationPipe({
+  //   transform: true
+  // }));
 
   useContainer(app.select(AppModule), {fallbackOnErrors: true});
 
