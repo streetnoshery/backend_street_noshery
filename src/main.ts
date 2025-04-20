@@ -39,10 +39,13 @@ async function bootstrap() {
   app.useGlobalInterceptors(new StandardResponseInterceptor());
   initializeFirebaseApp();
 
-
-  // app.useGlobalPipes(new ValidationPipe({
-  //   transform: true
-  // }));
+  app.use((req, res, next) => {
+    console.log('Request Body:', req.body);
+    next();
+  });
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true
+  }));
 
   useContainer(app.select(AppModule), {fallbackOnErrors: true});
 
