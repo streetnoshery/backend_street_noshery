@@ -42,11 +42,7 @@ export class StreetnosheryOrderService {
         orderStatus: CustomerOrderStatus.PLACED,
         orderPlacedAt: new Date(),
         isOrderPlaced: true,
-        paymentStatus: PaymentStatus.SUCCESS,
-        isPaymentDone: true,
-        paymentAmount: totalAmount,
-        razorpayOrderId: order.razorpayOrderId,
-        paymentId: order.paymentId
+        paymentAmount: totalAmount
       };
       const res = await this.orderModelHelperService.createOrupdateOrder(
         { orderTrackId: orderTrackingId },
@@ -91,10 +87,14 @@ export class StreetnosheryOrderService {
         isOrderConfirmed: true,
         orderConfirmedAt: new Date(),
         orderStatus: CustomerOrderStatus.CONFIRMED,
+        paymentStatus: PaymentStatus.SUCCESS,
+        isPaymentDone: true,
+        razorpayOrderId: order.razorpayOrderId,
+        paymentId: order.paymentId
       };
       console.log(`${prefix} (createOrder) Order query: ${JSON.stringify(order)}`);
       await this.orderModelHelperService.createOrupdateOrder(
-        order,
+        {orderTrackId: order.orderTrackId},
         updateobje
       );
 
