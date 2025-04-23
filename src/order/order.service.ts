@@ -42,7 +42,7 @@ export class StreetnosheryOrderService {
         orderStatus: CustomerOrderStatus.PLACED,
         orderPlacedAt: new Date(),
         isOrderPlaced: true,
-        paymentAmount: totalAmount
+        paymentAmount: order.amount.toString()
       };
       const res = await this.orderModelHelperService.createOrupdateOrder(
         { orderTrackId: orderTrackingId },

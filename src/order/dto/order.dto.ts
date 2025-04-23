@@ -33,6 +33,9 @@ export class CustomerOrderFTDto {
     @ValidateNested({ each: true })
     @Type(() => OrderItemDto)
     orderItems: OrderItemDto[];
+
+    @IsNumber()
+    amount: number;
 }
 
 export class CustomerOrderDto {
