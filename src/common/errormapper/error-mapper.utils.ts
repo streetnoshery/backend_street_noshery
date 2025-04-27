@@ -5,7 +5,8 @@ export enum ExceptionMessage {
     ERROR = "ERROR",
     OTP_LIMIT_EXCEEDED = "OTP_LIMIT_EXCEEDED",
     INVALID_OTP = "INVALID_OTP",
-    EXPIRE_OTP = "EXPIRE_OTP"
+    EXPIRE_OTP = "EXPIRE_OTP",
+    MENU_NOT_EXISTS = "MENU_NOT_EXISTS"
 }
 
 export const EXCEPTION_MAP: IExceptionMap = {
@@ -36,5 +37,12 @@ export const EXCEPTION_MAP: IExceptionMap = {
             errorCode: ExceptionMessage.EXPIRE_OTP
         },
         xStreetNosheryException: "Otp has been expired"
+    },
+    [ExceptionMessage.MENU_NOT_EXISTS]: {
+        data: {
+            message: "menu not exists for the given shop",
+            errorCode: ExceptionMessage.MENU_NOT_EXISTS
+        },
+        xStreetNosheryException: "menu not exists for the given shop"
     }
 }

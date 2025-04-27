@@ -33,7 +33,6 @@ export class StreetnosheryOrderService {
   async createOrderFT(order: CustomerOrderFTDto) {
     try {
       const orderTrackingId = this.generateOrderTrackId();
-      const totalAmount = this.getOrderAmount(order.orderItems)
       const updateObject: UpdateQuery<ICustomerOrderData> = {
         customerId: order.customerId,
         shopId: order.shopId,
@@ -48,11 +47,11 @@ export class StreetnosheryOrderService {
         { orderTrackId: orderTrackingId },
         updateObject,
       );
+
       console.log(
         `${prefix} (createOrderFT) Order FT created successfully for trackingId: ${orderTrackingId}`,
       );
 
-      // TODO: Payment API
       return res;
     } catch (error) {
       console.log(`${prefix} (createOrderFT) Error: ${JSON.stringify(error)}`);
@@ -105,7 +104,21 @@ export class StreetnosheryOrderService {
       );
       return confirmOrder;
     } catch (error) {
+      const updateobj: any = {
+        orderStatus: CustomerOrderStatus.FAILED,
+        isOrderInProgress: false,
+        orderFailedAt: new Date,
+        isOrderFailed: true
+      }
+
+      const res = await this.orderModelHelperService.createOrupdateOrder(
+        { orderTrackId: order.orderTrackId },
+        updateobj,
+      );
+      console.log(`${prefix} (createOrder) updated order details: ${JSON.stringify(res)}`)
       console.log(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
+
+      // TODO: retry logic and after 3 retrials it should failed 
       throw error;
     }
   }
@@ -129,7 +142,21 @@ export class StreetnosheryOrderService {
       );
       return confirmOrder;
     } catch (error) {
+      const updateobj: any = {
+        orderStatus: CustomerOrderStatus.FAILED,
+        isOrderInProgress: false,
+        orderFailedAt: new Date,
+        isOrderFailed: true
+      }
+
+      const res = await this.orderModelHelperService.createOrupdateOrder(
+        { orderTrackId: order.orderTrackId },
+        updateobj,
+      );
+      console.log(`${prefix} (updateOrders) updated order details: ${JSON.stringify(res)}`)
       console.log(`${prefix} (updateOrders) Error: ${JSON.stringify(error)}`);
+
+      // TODO: retry logic and after 3 retrials it should failed
       throw error;
     }
   }

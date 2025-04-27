@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { StreetNosheryMenuModelHelperService } from "./model/menu-modelhelper.service";
 import { Menu } from "./interface/menu.interface";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { EventHnadlerEnums } from "src/common/events/enums";
+import { exceptionMapper } from "src/common/errormapper/exception-mapper";
+import { ExceptionMessage } from "src/common/errormapper/error-mapper.utils";
 const prefix = "[STREET_NOSHERY_MENU_SERVICE]"
 
 @Injectable()
@@ -36,6 +38,11 @@ export class StreetNosherymenuService {
     async getMenu(shopId: string) {
         try {
             const res = await this.StreetNosheryModelHelperService.getMenuWithShopId(shopId);
+
+            if(!res) {
+                console.log(`${prefix} (getMenu) menu npt exists for shopId: ${shopId}`)
+                throw new BadRequestException(exceptionMapper(ExceptionMessage.MENU_NOT_EXISTS));
+            }
             console.log(`${prefix} (getMenu) Successful res: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
