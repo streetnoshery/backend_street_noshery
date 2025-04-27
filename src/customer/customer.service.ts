@@ -7,6 +7,8 @@ import { OnboardingStages } from "./enums/customer.enums";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { EventHnadlerEnums } from "src/common/events/enums";
 import { NotificationService } from "src/notification/notification.service";
+import { exceptionMapper } from "src/common/errormapper/exception-mapper";
+import { ExceptionMessage } from "src/common/errormapper/error-mapper.utils";
 
 const prefix = "[STREET_NOSHERY_CUSTOMER_SERVICE]"
 @Injectable()
@@ -92,7 +94,7 @@ export class StreetNosheryCustomerService {
             // Check if OTP data exists and retrials exceeded
             if (otpData && otpData.count >= MAX_RETRIALS && !this.isExpiredOtp(otpData.updatedAt)) {
                 console.log(`${prefix} (generateOtp) Failed to generate OTP: ${JSON.stringify(otpData)}`);
-                throw new BadRequestException('Limit Exceeded');
+                throw new BadRequestException(exceptionMapper(ExceptionMessage.OTP_LIMIT_EXCEEDED));
             }
 
             let generatedOtp = this.generateRandomOtp();
@@ -137,12 +139,12 @@ export class StreetNosheryCustomerService {
 
             if (!res) {
                 console.log(`${prefix} (verifyOtp) Failed: ${JSON.stringify(res)}`);
-                throw new BadRequestException('Invalid OTP');
+                throw new BadRequestException(exceptionMapper(ExceptionMessage.INVALID_OTP));
             }
 
             const { updatedAt } = res;
             if (this.isExpiredOtp(updatedAt)) {
-                throw new BadRequestException('Expired OTP');
+                throw new BadRequestException(exceptionMapper(ExceptionMessage.EXPIRE_OTP));
             }
             return "ok"
         } catch (error) {
