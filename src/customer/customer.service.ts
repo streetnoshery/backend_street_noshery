@@ -119,9 +119,9 @@ export class StreetNosheryCustomerService {
 
             if (user?.email) {
                 const email = user.email;
-                await this.smsService.sendOtpViaEmail(email, generatedOtp);
+                this.smsService.sendOtpViaEmail(email, generatedOtp);
             } else {
-                await this.smsService.sendSMSTwilio(generatedOtp, mobileNumber);
+                this.smsService.sendSMSTwilio(generatedOtp, mobileNumber);
             }
 
             console.log(`${prefix} (generateOtp) Successful || Response: ${JSON.stringify(res)}`);
