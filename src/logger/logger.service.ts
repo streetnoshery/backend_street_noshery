@@ -16,8 +16,8 @@ export class LoggerService {
       transports: [
         new transports.Console(),
         new DatadogTransport({
-          apiKey: 'YOUR_DATADOG_API_KEY',
-          service: 'nestjs-service',
+          apiKey: process.env.DATADOG_KEY,
+          service: 'street-noshery',
           hostname: 'nestjs-app',
           ddtags: 'env:dev,nestjs',
         }),
