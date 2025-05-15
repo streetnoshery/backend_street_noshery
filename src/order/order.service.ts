@@ -9,12 +9,14 @@ import {
 import { CustomerOrderStatus, IOrderStatusFlags, OREDER_STATUS_ID, PaymentStatus, STATUS_FLAGS, orderTitle } from './enums/order.enum';
 import { UpdateQuery } from 'mongoose';
 import { ICustomerOrderData } from './model/order.model';
+import { LoggerService } from 'src/logger/logger.service';
 
 const prefix = '[STREET_NOSHERY_ORDER_SERVICE]';
 @Injectable()
 export class StreetnosheryOrderService {
   constructor(
     private readonly orderModelHelperService: StreetNosheryOrderModelHelperService,
+    private readonly logger: LoggerService
   ) {}
 
   async getPastOrders(customerId: string) {
@@ -22,10 +24,10 @@ export class StreetnosheryOrderService {
       const res = await this.orderModelHelperService.getPastOrders({
         customerId,
       });
-      console.log(`${prefix} (getPastOrders) Response: ${JSON.stringify(res)}`);
+      this.logger.log(`${prefix} (getPastOrders) Response: ${JSON.stringify(res)}`);
       return res;
     } catch (error) {
-      console.log(`${prefix} (getPastOrders) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (getPastOrders) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -48,13 +50,13 @@ export class StreetnosheryOrderService {
         updateObject,
       );
 
-      console.log(
+      this.logger.log(
         `${prefix} (createOrderFT) Order FT created successfully for trackingId: ${orderTrackingId}`,
       );
 
       return res;
     } catch (error) {
-      console.log(`${prefix} (createOrderFT) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (createOrderFT) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -91,7 +93,7 @@ export class StreetnosheryOrderService {
         razorpayOrderId: order.razorpayOrderId,
         paymentId: order.paymentId
       };
-      console.log(`${prefix} (createOrder) Order query: ${JSON.stringify(order)}`);
+      this.logger.log(`${prefix} (createOrder) Order query: ${JSON.stringify(order)}`);
       await this.orderModelHelperService.createOrupdateOrder(
         {orderTrackId: order.orderTrackId},
         updateobje
@@ -99,7 +101,7 @@ export class StreetnosheryOrderService {
 
       const confirmOrder = await this.orderModelHelperService.getOrderWithTrackId({ orderTrackId: order.orderTrackId })
 
-      console.log(
+      this.logger.log(
         `${prefix} (createOrder) Order confirmed for TrackId: ${order.orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
       return confirmOrder;
@@ -115,8 +117,8 @@ export class StreetnosheryOrderService {
         { orderTrackId: order.orderTrackId },
         updateobj,
       );
-      console.log(`${prefix} (createOrder) updated order details: ${JSON.stringify(res)}`)
-      console.log(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (createOrder) updated order details: ${JSON.stringify(res)}`)
+      this.logger.error(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
 
       // TODO: retry logic and after 3 retrials it should failed 
       throw error;
@@ -137,7 +139,7 @@ export class StreetnosheryOrderService {
 
       const confirmOrder = await this.orderModelHelperService.getOrderWithTrackId({ orderTrackId });
 
-      console.log(
+      this.logger.log(
         `${prefix} (updateOrders) Order confirmed for TrackId: ${orderTrackId} | Response: ${JSON.stringify(confirmOrder)}`,
       );
       return confirmOrder;
@@ -153,8 +155,8 @@ export class StreetnosheryOrderService {
         { orderTrackId: order.orderTrackId },
         updateobj,
       );
-      console.log(`${prefix} (updateOrders) updated order details: ${JSON.stringify(res)}`)
-      console.log(`${prefix} (updateOrders) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (updateOrders) updated order details: ${JSON.stringify(res)}`)
+      this.logger.error(`${prefix} (updateOrders) Error: ${JSON.stringify(error)}`);
 
       // TODO: retry logic and after 3 retrials it should failed
       throw error;
@@ -187,14 +189,14 @@ export class StreetnosheryOrderService {
 
   async getOrderByShopId(shopId: number) {
     try {
-      console.log(shopId);
+      this.logger.log(`shopId: ${shopId}`);
       const res = await this.orderModelHelperService.getPastOrders({
         shopId
       });
-      console.log(`${prefix} (getOrderByShopId) Response: ${JSON.stringify(res)}`);
+      this.logger.log(`${prefix} (getOrderByShopId) Response: ${JSON.stringify(res)}`);
       return res;
     } catch (error) {
-      console.log(`${prefix} (getOrderByShopId) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (getOrderByShopId) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -207,7 +209,7 @@ export class StreetnosheryOrderService {
 
       const getFlags = this.flags(orderStatus);
 
-      console.log(`${prefix} (getStatus) flags for orderTrackId: ${orderTrackId} | flags: ${JSON.stringify(getFlags)}`);
+      this.logger.log(`${prefix} (getStatus) flags for orderTrackId: ${orderTrackId} | flags: ${JSON.stringify(getFlags)}`);
 
       const statusStack = this.getStatusStack(getFlags, {
         orderPlaced: orderConfirmedAt,
@@ -237,11 +239,11 @@ export class StreetnosheryOrderService {
         isorderCancelled
       }
 
-      console.log(`${prefix} (getStatus) response for orderTrackId: ${orderTrackId} | ${JSON.stringify(response)}`);
+      this.logger.log(`${prefix} (getStatus) response for orderTrackId: ${orderTrackId} | ${JSON.stringify(response)}`);
 
       return response;
     } catch (error) {
-      console.log(`${prefix} (getStatus) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (getStatus) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -281,7 +283,7 @@ export class StreetnosheryOrderService {
 
       return flags;
     } catch (error) {
-      console.log(`${prefix} (orderStatus) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (orderStatus) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }

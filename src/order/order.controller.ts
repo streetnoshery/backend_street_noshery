@@ -5,25 +5,29 @@ import {
   CustomerOrderFTDto,
   UpdateOrderDto,
 } from './dto/order.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 const prefix = '[STREET_NOSHERY_ORDER_CONTROLLER]';
 @Controller('order')
 export class StreetNosheryOrderController {
-  constructor(private orderService: StreetnosheryOrderService) {}
+  constructor(
+    private orderService: StreetnosheryOrderService,
+    private readonly logger: LoggerService
+    ) {}
 
   @Get('')
   async getOrders(@Query('customerId') customerId: string) {
     try {
-      console.log(
+      this.logger.log(
         `${prefix} (getOrders) initiating get orders for customerId: ${customerId}`,
       );
       const res = await this.orderService.getPastOrders(customerId);
-      console.log(
+      this.logger.log(
         `${prefix} (getOrders) Successful fetched orders for customerId: ${customerId} | Response: ${JSON.stringify(res)}`,
       );
       return res;
     } catch (error) {
-      console.log(`${prefix} (getOrders) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (getOrders) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -31,16 +35,16 @@ export class StreetNosheryOrderController {
   @Post('create/ft')
   async createOrderFT(@Body() body: CustomerOrderFTDto) {
     try {
-      console.log(
+      this.logger.log(
         `${prefix} (createOrderFT) initiating create orders FT for customerId: ${body.customerId}`,
       );
       const res = await this.orderService.createOrderFT(body);
-      console.log(
+      this.logger.log(
         `${prefix} (createOrderFT) Successful order FT created Response: ${JSON.stringify(res)}`,
       );
       return res;
     } catch (error) {
-      console.log(`${prefix} (createOrderFT) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (createOrderFT) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -48,16 +52,16 @@ export class StreetNosheryOrderController {
   @Post('create')
   async createOrder(@Body() body: CustomerOrderDto) {
     try {
-      console.log(
+      this.logger.log(
         `${prefix} (createOrder) initiating create orders for TrackId: ${body.orderTrackId}`,
       );
       const res = await this.orderService.createOrder(body);
-      console.log(
+      this.logger.log(
         `${prefix} (createOrder) Successful order  created Response: ${JSON.stringify(res)}`,
       );
       return res;
     } catch (error) {
-      console.log(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
+      this.logger.error(`${prefix} (createOrder) Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -65,16 +69,16 @@ export class StreetNosheryOrderController {
   @Patch('update')
   async updateOrderStatus(@Body() body: UpdateOrderDto) {
     try {
-      console.log(
+      this.logger.log(
         `${prefix} (updateOrderStatus) initiating update order for TrackId: ${body.orderTrackId} | Status: ${body.orderStatus}`,
       );
       const res = await this.orderService.updateOrders(body);
-      console.log(
+      this.logger.log(
         `${prefix} (updateOrderStatus) updated order for TrackId: ${body.orderTrackId}`,
       );
       return res;
     } catch (error) {
-      console.log(
+      this.logger.error(
         `${prefix} (updateOrderStatus) Error: ${JSON.stringify(error)}`,
       );
       throw error;
@@ -84,16 +88,16 @@ export class StreetNosheryOrderController {
   @Get('status')
   async getOrderStatus(@Query("orderTrackId") orderTrackId: string) {
     try {
-      console.log(
+      this.logger.log(
         `${prefix} (getOrderStatus) initiating get order status for orderTrackId: ${orderTrackId}`,
       );
       const res = await this.orderService.getStatus(orderTrackId);
-      console.log(
+      this.logger.log(
         `${prefix} (getOrderStatus) Response get order status for orderTrackId: ${orderTrackId} | ${JSON.stringify(res)}`,
       );
       return res;
     } catch (error) {
-      console.log(
+      this.logger.error(
         `${prefix} (getOrderStatus) Error: ${JSON.stringify(error)}`,
       );
       throw error;
@@ -103,16 +107,16 @@ export class StreetNosheryOrderController {
   @Get('order-by-shopId')
   async getOrderBuShopId(@Query('shopId') shopId: number) {
     try {
-      console.log(
+      this.logger.log(
         `${prefix} (getOrderBuShopId) initiating get order for shopId: ${shopId}`,
       );
       const res = await this.orderService.getOrderByShopId(shopId);
-      console.log(
+      this.logger.log(
         `${prefix} (getOrderBuShopId) updated order for shopId: ${shopId}`,
       );
       return res;
     } catch (error) {
-      console.log(
+      this.logger.error(
         `${prefix} (getOrderBuShopId) Error: ${JSON.stringify(error)}`,
       );
       throw error;

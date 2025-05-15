@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ReviewsDto } from "./dto/review.dto";
 import { StreetNosheryReviewModelHelperService } from "./model/review-helper.service";
 import { StreetNosheryMenuModelHelperService } from "src/menu/model/menu-modelhelper.service";
+import { LoggerService } from "src/logger/logger.service";
 
 const prefix = "STREET_NOSHERY_REVIEW_SERVICE"
 
@@ -9,7 +10,8 @@ const prefix = "STREET_NOSHERY_REVIEW_SERVICE"
 export class StreetNosheryReviewService {
     constructor(
         private readonly streetNosheryReviewModelHelperService: StreetNosheryReviewModelHelperService,
-        private readonly menuModelHelperService: StreetNosheryMenuModelHelperService
+        private readonly menuModelHelperService: StreetNosheryMenuModelHelperService,
+        private readonly logger: LoggerService
     ) { }
 
     async createOrUpdateReview(body: ReviewsDto) {
@@ -23,9 +25,10 @@ export class StreetNosheryReviewService {
                 rating: stars
             }
             const res = await this.streetNosheryReviewModelHelperService.createOrupdate({ shopId, customerId }, updateObj);
+            this.logger.log(`${prefix} (createOrUpdateReview) customerId: ${customerId} response: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
-            console.log(`${prefix} (createOrUpdateReview) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (createOrUpdateReview) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -34,7 +37,7 @@ export class StreetNosheryReviewService {
         try {
 
             const res = await this.streetNosheryReviewModelHelperService.getReviews({ shopId });
-            console.log(`${prefix} (reviews) SuccessFul response: ${JSON.stringify(res)}`);
+            this.logger.log(`${prefix} (reviews) SuccessFul response: ${JSON.stringify(res)}`);
 
             if (res.totalRating == 0) {
                 throw new Error("Rating is not given for this shop.");
@@ -51,7 +54,7 @@ export class StreetNosheryReviewService {
                 averageRating 
             };
         } catch (error) {
-            console.log(`${prefix} (reviews) Error: ${JSON.stringify(error)} `);
+            this.logger.error(`${prefix} (reviews) Error: ${JSON.stringify(error)} `);
             throw error;
         }
     }
@@ -61,9 +64,10 @@ export class StreetNosheryReviewService {
             const { shopId, stars, foodId} = body;
 
             const res = await this.menuModelHelperService.updateFoodReview(shopId, foodId, stars);
+            this.logger.log(`${prefix} (createOrUpdateReview) shopId: ${shopId} response: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
-            console.log(`${prefix} (createOrUpdateReview) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (createOrUpdateReview) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }

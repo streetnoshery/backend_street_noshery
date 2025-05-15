@@ -5,13 +5,15 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { EventHnadlerEnums } from "src/common/events/enums";
 import { exceptionMapper } from "src/common/errormapper/exception-mapper";
 import { ExceptionMessage } from "src/common/errormapper/error-mapper.utils";
+import { LoggerService } from "src/logger/logger.service";
 const prefix = "[STREET_NOSHERY_MENU_SERVICE]"
 
 @Injectable()
 export class StreetNosherymenuService {
     constructor(
         private readonly StreetNosheryModelHelperService: StreetNosheryMenuModelHelperService,
-        private readonly emitterService: EventEmitter2
+        private readonly emitterService: EventEmitter2,
+        private readonly logger: LoggerService
     ) {}
 
     async createOrUpdateMenu(shopId: number, menu: Menu) {
@@ -21,12 +23,12 @@ export class StreetNosherymenuService {
                 foodId: this.randomFoodId()
             }
             const res = await this.StreetNosheryModelHelperService.createOrupdateMenu({shopId}, updateMenu);
-            console.log(`${prefix} (createOrUpdateMenu) Successful res: ${JSON.stringify(res)}`);
+            this.logger.log(`${prefix} (createOrUpdateMenu) Successful res: ${JSON.stringify(res)}`);
             const {_id, __v, ...result} = res;
             this.emitterService.emit(EventHnadlerEnums.MENU_UPDATE, {shopId: result.shopId, data: result})
             return res;
         } catch (error) {
-            console.log(`${prefix} (createOrUpdateMenu) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (createOrUpdateMenu) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -40,13 +42,13 @@ export class StreetNosherymenuService {
             const res = await this.StreetNosheryModelHelperService.getMenuWithShopId(shopId);
 
             if(!res) {
-                console.log(`${prefix} (getMenu) menu npt exists for shopId: ${shopId}`)
+                this.logger.error(`${prefix} (getMenu) menu npt exists for shopId: ${shopId}`)
                 throw new BadRequestException(exceptionMapper(ExceptionMessage.MENU_NOT_EXISTS));
             }
-            console.log(`${prefix} (getMenu) Successful res: ${JSON.stringify(res)}`);
+            this.logger.log(`${prefix} (getMenu) Successful res: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
-            console.log(`${prefix} (getMenu) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (getMenu) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }

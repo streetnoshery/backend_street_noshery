@@ -9,6 +9,7 @@ import { EventHnadlerEnums } from "src/common/events/enums";
 import { NotificationService } from "src/notification/notification.service";
 import { exceptionMapper } from "src/common/errormapper/exception-mapper";
 import { ExceptionMessage } from "src/common/errormapper/error-mapper.utils";
+import { LoggerService } from "src/logger/logger.service";
 
 const prefix = "[STREET_NOSHERY_CUSTOMER_SERVICE]"
 @Injectable()
@@ -16,7 +17,8 @@ export class StreetNosheryCustomerService {
     constructor(
         private readonly streetNosheryCustomerModelhelper: StreetNosheryCustomerModelHelper,
         private readonly emitterService: EventEmitter2,
-        private readonly smsService: NotificationService
+        private readonly smsService: NotificationService,
+        private readonly logger: LoggerService
     ) { }
 
     async getUser(mobileNumber: string) {
@@ -24,7 +26,7 @@ export class StreetNosheryCustomerService {
             const res = await this.streetNosheryCustomerModelhelper.getUser({ mobileNumber });
             return res;
         } catch (error) {
-            console.log(`${prefix} (getUser) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (getUser) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -35,7 +37,7 @@ export class StreetNosheryCustomerService {
         try {
 
             const userDetails = await this.streetNosheryCustomerModelhelper.getUser({ mobileNumber });
-            console.log(`${prefix} (createUser) user details: ${JSON.stringify(userDetails)}`);
+            this.logger.log(`${prefix} (createUser) user details: ${JSON.stringify(userDetails)}`);
             if (!userDetails) {
                 updateObj = {
                     mobileNumber,
@@ -47,7 +49,7 @@ export class StreetNosheryCustomerService {
             else if (userDetails?.status == OnboardingStages.MOBILE_VERIFICATION) {
                 const { email, password } = body;
                 const isRegisterForShop = await this.streetNosheryCustomerModelhelper.getEmail({ email });
-                console.log(`${prefix} (createUser) is user going to register for shop: ${JSON.stringify(isRegisterForShop)}`)
+                this.logger.log(`${prefix} (createUser) is user going to register for shop: ${JSON.stringify(isRegisterForShop)}`)
                 updateObj = {
                     email,
                     password,
@@ -68,12 +70,12 @@ export class StreetNosheryCustomerService {
                 }
             }
             const res = await this.streetNosheryCustomerModelhelper.createOrUpdateUser({ mobileNumber }, updateObj);
-            console.log(`${prefix} (createUser) Successful || Response: ${JSON.stringify(res)}`);
+            this.logger.log(`${prefix} (createUser) Successful || Response: ${JSON.stringify(res)}`);
             const { _id, __v, ...result } = res;
             this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             return res;
         } catch (error) {
-            console.log(`${prefix} (createUser) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (createUser) Error: ${JSON.stringify(error)}`);
             updateObj = {
                 status: OnboardingStages.FAILED
             }
@@ -93,7 +95,7 @@ export class StreetNosheryCustomerService {
 
             // Check if OTP data exists and retrials exceeded
             if (otpData && otpData.count >= MAX_RETRIALS && !this.isExpiredOtp(otpData.updatedAt)) {
-                console.log(`${prefix} (generateOtp) Failed to generate OTP: ${JSON.stringify(otpData)}`);
+                this.logger.error(`${prefix} (generateOtp) Failed to generate OTP: ${JSON.stringify(otpData)}`);
                 throw new BadRequestException(exceptionMapper(ExceptionMessage.OTP_LIMIT_EXCEEDED));
             }
 
@@ -124,10 +126,10 @@ export class StreetNosheryCustomerService {
                 this.smsService.sendSMSTwilio(generatedOtp, mobileNumber);
             }
 
-            console.log(`${prefix} (generateOtp) Successful || Response: ${JSON.stringify(res)}`);
+            this.logger.log(`${prefix} (generateOtp) Successful || Response: ${JSON.stringify(res)}`);
             return "ok";
         } catch (error) {
-            console.log(`${prefix} (generateOtp) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (generateOtp) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -138,7 +140,7 @@ export class StreetNosheryCustomerService {
             const res = await this.streetNosheryCustomerModelhelper.getOtp(body);
 
             if (!res) {
-                console.log(`${prefix} (verifyOtp) Failed: ${JSON.stringify(res)}`);
+                this.logger.error(`${prefix} (verifyOtp) Failed: ${JSON.stringify(res)}`);
                 throw new BadRequestException(exceptionMapper(ExceptionMessage.INVALID_OTP));
             }
 
@@ -148,7 +150,7 @@ export class StreetNosheryCustomerService {
             }
             return "ok"
         } catch (error) {
-            console.log(`${prefix} (verifyOtp) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (verifyOtp) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -183,7 +185,7 @@ export class StreetNosheryCustomerService {
             this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             return res;
         } catch (error) {
-            console.log(`${prefix} (enableEmailNotification) Error: ${JSON.stringify(error)} `);
+            this.logger.error(`${prefix} (enableEmailNotification) Error: ${JSON.stringify(error)} `);
             throw error;
         }
     }
@@ -204,7 +206,7 @@ export class StreetNosheryCustomerService {
             this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             return res;
         } catch (error) {
-            console.log(`${prefix} (updateAddress) Error: ${JSON.stringify(error)} `);
+            this.logger.error(`${prefix} (updateAddress) Error: ${JSON.stringify(error)} `);
             throw error;
         }
     }
@@ -218,7 +220,7 @@ export class StreetNosheryCustomerService {
             this.emitterService.emit(EventHnadlerEnums.CUSTOMER_DETAILS_REFRESH, { data: result, mobileNumber: res.mobileNumber })
             return res;
         } catch (error) {
-            console.log(`${prefix} (updateUserDetails) Error: ${JSON.stringify(error)} `);
+            this.logger.error(`${prefix} (updateUserDetails) Error: ${JSON.stringify(error)} `);
             throw error;
         }
     }

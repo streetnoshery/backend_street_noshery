@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import * as twilio from 'twilio';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { LoggerService } from "src/logger/logger.service";
 const nodemailer = require('nodemailer');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const crypto = require('crypto');
@@ -9,7 +10,8 @@ const crypto = require('crypto');
 @Injectable()
 export class NotificationService {
     constructor(
-        private readonly httpService: HttpService
+        private readonly httpService: HttpService,
+        private readonly logger: LoggerService
     ) { }
 
     async sendSMSTwilio(otp?: string, mobileNumber?: string) {
@@ -21,9 +23,9 @@ export class NotificationService {
                 to: `+91${mobileNumber}`,
             });
 
-            console.log('Message sent successfully:', response.sid);
+            this.logger.log('Message sent successfully:', response.sid);
         } catch (error) {
-            console.error('Failed to send message:', error);
+            this.logger.error('Failed to send message:', error);
             throw error;
         }
     }
@@ -50,9 +52,9 @@ export class NotificationService {
                 this.httpService.post(url, payload, { headers }),
             );
 
-            console.log(`SMS sent successfully: ${JSON.stringify(response.data)}`);
+            this.logger.log(`SMS sent successfully: ${JSON.stringify(response.data)}`);
         } catch (error) {
-            console.error('Failed to send message:', error);
+            this.logger.error('Failed to send message:', error);
             throw error;
         }
     }
@@ -122,9 +124,9 @@ export class NotificationService {
         // Send email
         try {
             const info = await transporter.sendMail(mailOptions);
-            console.log('Email sent: ', info.response);
+            this.logger.log('Email sent: ', info.response);
         } catch (error) {
-            console.error('Error sending email: ', error);
+            this.logger.error('Error sending email: ', error);
         }
     }
 
@@ -171,9 +173,9 @@ export class NotificationService {
 
         try {
             const result = await ses.send(new SendEmailCommand(params));
-            console.log("Email sent successfully!", result);
+            this.logger.log("Email sent successfully!", result);
         } catch (error) {
-            console.error('Error sending email:', error);
+            this.logger.error('Error sending email:', error);
         }
     }
 }

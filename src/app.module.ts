@@ -11,6 +11,7 @@ import { StreetNosheryMenuModule } from './menu/menu.module';
 import { StreetNosheryOrderModule } from './order/order.module';
 import { StreetNosheryReviewModule } from './review/review.module';
 import { NotificationModule } from './notification/notification.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { NotificationModule } from './notification/notification.module';
     StreetNosheryMenuModule,
     StreetNosheryOrderModule,
     StreetNosheryReviewModule,
-    NotificationModule
+    NotificationModule,
+    LoggerModule
   ],
   controllers: [AppController],
   providers: [AppService],
