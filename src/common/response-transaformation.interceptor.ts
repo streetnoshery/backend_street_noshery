@@ -37,7 +37,6 @@ export class StandardResponseInterceptor implements NestInterceptor {
             path: request.url
         };
 
-        return response;
         const encryptedResponse = encrypt(JSON.stringify(response));
         return { response: encryptedResponse };
     }
