@@ -277,7 +277,7 @@ export class StreetnosheryOrderService {
         flags.orderPlaced = STATUS_FLAGS.SUCCESS
         flags.outForDelivery = STATUS_FLAGS.IN_PROGRESS
         if (isOrderFailed || isorderCancelled) {
-          flags.orderPlaced = STATUS_FLAGS.FAILED
+          flags.outForDelivery = STATUS_FLAGS.FAILED
         }
       }
       else if ([CustomerOrderStatus.DELIVERED].includes(status)) {
@@ -285,7 +285,7 @@ export class StreetnosheryOrderService {
         flags.outForDelivery = STATUS_FLAGS.SUCCESS
         flags.delivered = STATUS_FLAGS.SUCCESS
         if (isOrderFailed || isorderCancelled) {
-          flags.orderPlaced = STATUS_FLAGS.FAILED
+          flags.delivered = STATUS_FLAGS.FAILED
         }
       }
 
