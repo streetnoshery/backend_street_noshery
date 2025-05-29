@@ -145,7 +145,6 @@ export class StreetnosheryOrderService {
       return confirmOrder;
     } catch (error) {
       const updateobj: any = {
-        orderStatus: CustomerOrderStatus.FAILED,
         isOrderInProgress: false,
         orderFailedAt: new Date,
         isOrderFailed: true
@@ -183,14 +182,12 @@ export class StreetnosheryOrderService {
           orderCancelledAt: new Date(),
           isorderCancelled: true,
           isOrderInProgress: false,
-          orderStatus: CustomerOrderStatus.CANCELLED
         };
       case CustomerOrderStatus.FAILED:
         return {
           orderFailedAt: new Date,
           isOrderFailed: true,
           isOrderInProgress: false,
-          orderStatus: CustomerOrderStatus.FAILED
         };
     }
   }
@@ -215,7 +212,7 @@ export class StreetnosheryOrderService {
 
       const {orderPlacedAt, customerId, orderStatus, orderConfirmedAt, orderOutForDeliveryAt, orderDeliveredAt, orderCancelledAt, orderFailedAt, paymentAmount, paymentStatus, isOrderPlaced, isOrderOutForDelivery, isOrderConfirmed, isOrderDelivered, isOrderFailed, isorderCancelled, isPaymentDone} = order[0];
 
-      const getFlags = this.flags(orderStatus);
+      const getFlags = this.flags(orderStatus, isOrderFailed, isorderCancelled);
 
       this.logger.log(`${prefix} (getStatus) flags for orderTrackId: ${orderTrackId} | flags: ${JSON.stringify(getFlags)}`);
 
@@ -259,7 +256,7 @@ export class StreetnosheryOrderService {
     }
   }
 
-  flags(status: CustomerOrderStatus) {
+  flags(status: CustomerOrderStatus, isOrderFailed: boolean, isorderCancelled: boolean) {
     try {
       const flags: IOrderStatusFlags = {
         orderPlaced: STATUS_FLAGS.NOT_INITIATED,
@@ -272,23 +269,23 @@ export class StreetnosheryOrderService {
 
       if ([CustomerOrderStatus.PLACED, CustomerOrderStatus.CONFIRMED].includes(status)) {
         flags.orderPlaced = STATUS_FLAGS.IN_PROGRESS
-        if ([CustomerOrderStatus.FAILED, CustomerOrderStatus.CANCELLED].includes(status)) {
+        if (isOrderFailed || isorderCancelled) {
           flags.orderPlaced = STATUS_FLAGS.FAILED
         }
       }
       else if ([CustomerOrderStatus.OUT_FOR_DELIVERY].includes(status)) {
         flags.orderPlaced = STATUS_FLAGS.SUCCESS
         flags.outForDelivery = STATUS_FLAGS.IN_PROGRESS
-        if ([CustomerOrderStatus.FAILED, CustomerOrderStatus.CANCELLED].includes(status)) {
-          flags.outForDelivery = STATUS_FLAGS.FAILED
+        if (isOrderFailed || isorderCancelled) {
+          flags.orderPlaced = STATUS_FLAGS.FAILED
         }
       }
       else if ([CustomerOrderStatus.DELIVERED].includes(status)) {
         flags.orderPlaced = STATUS_FLAGS.SUCCESS
         flags.outForDelivery = STATUS_FLAGS.SUCCESS
         flags.delivered = STATUS_FLAGS.SUCCESS
-        if ([CustomerOrderStatus.FAILED, CustomerOrderStatus.CANCELLED].includes(status)) {
-          flags.delivered = STATUS_FLAGS.FAILED
+        if (isOrderFailed || isorderCancelled) {
+          flags.orderPlaced = STATUS_FLAGS.FAILED
         }
       }
 
