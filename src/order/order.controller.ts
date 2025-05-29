@@ -70,7 +70,7 @@ export class StreetNosheryOrderController {
   async updateOrderStatus(@Body() body: UpdateOrderDto) {
     try {
       this.logger.log(
-        `${prefix} (updateOrderStatus) initiating update order for TrackId: ${body.orderTrackId} | Status: ${body.orderStatus}`,
+        `${prefix} (updateOrderStatus) initiating update order for TrackId: ${body.orderTrackId} | body: ${JSON.stringify(body)}`,
       );
       const res = await this.orderService.updateOrders(body);
       this.logger.log(

@@ -127,13 +127,13 @@ export class StreetnosheryOrderService {
 
   async updateOrders(order: UpdateOrderDto) {
     try {
-      const { orderTrackId, shopId, customerId } = order;
+      const { orderTrackId} = order;
       const updateobje: UpdateQuery<ICustomerOrderData> = this.getUpdateObj(
         order.orderStatus,
       );
 
       await this.orderModelHelperService.createOrupdateOrder(
-        { orderTrackId, shopId, customerId },
+        { orderTrackId },
         updateobje,
       );
 
@@ -182,7 +182,15 @@ export class StreetnosheryOrderService {
         return {
           orderCancelledAt: new Date(),
           isorderCancelled: true,
-          isOrderInProgress: false
+          isOrderInProgress: false,
+          orderStatus: CustomerOrderStatus.CANCELLED
+        };
+      case CustomerOrderStatus.FAILED:
+        return {
+          orderFailedAt: new Date,
+          isOrderFailed: true,
+          isOrderInProgress: false,
+          orderStatus: CustomerOrderStatus.FAILED
         };
     }
   }
@@ -205,7 +213,7 @@ export class StreetnosheryOrderService {
     try {
       const order = await this.orderModelHelperService.getPastOrders({ orderTrackId });
 
-      const { orderStatus, orderConfirmedAt, orderOutForDeliveryAt, orderDeliveredAt, orderCancelledAt, orderFailedAt, paymentAmount, paymentStatus, isOrderPlaced, isOrderOutForDelivery, isOrderConfirmed, isOrderDelivered, isOrderFailed, isorderCancelled} = order[0];
+      const {orderPlacedAt, customerId, orderStatus, orderConfirmedAt, orderOutForDeliveryAt, orderDeliveredAt, orderCancelledAt, orderFailedAt, paymentAmount, paymentStatus, isOrderPlaced, isOrderOutForDelivery, isOrderConfirmed, isOrderDelivered, isOrderFailed, isorderCancelled, isPaymentDone} = order[0];
 
       const getFlags = this.flags(orderStatus);
 
@@ -225,18 +233,21 @@ export class StreetnosheryOrderService {
         paymentAmount,
         paymentStatus,
         orderTrackId,
-        orderStatus, 
-        orderConfirmedAt, 
-        orderOutForDeliveryAt, 
-        orderDeliveredAt, 
-        orderCancelledAt, 
+        orderStatus,
+        orderConfirmedAt,
+        orderOutForDeliveryAt,
+        orderDeliveredAt,
+        orderCancelledAt,
         orderFailedAt,
-        isOrderPlaced, 
-        isOrderOutForDelivery, 
-        isOrderConfirmed, 
-        isOrderDelivered, 
-        isOrderFailed, 
-        isorderCancelled
+        isOrderPlaced,
+        isOrderOutForDelivery,
+        isOrderConfirmed,
+        isOrderDelivered,
+        isOrderFailed,
+        isorderCancelled,
+        isPaymentDone,
+        customerId,
+        orderPlacedAt
       }
 
       this.logger.log(`${prefix} (getStatus) response for orderTrackId: ${orderTrackId} | ${JSON.stringify(response)}`);

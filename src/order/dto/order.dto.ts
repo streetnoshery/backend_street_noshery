@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsArray, ValidateNested, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsArray, ValidateNested, IsEnum, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CustomerOrderStatus } from '../enums/order.enum';
 
@@ -60,9 +60,11 @@ export class UpdateOrderDto {
     orderTrackId: string;
 
     @IsString()
+    @IsOptional()
     customerId: string;
 
     @IsNumber()
+    @IsOptional()
     shopId: number;
 
     @IsEnum(CustomerOrderStatus)
