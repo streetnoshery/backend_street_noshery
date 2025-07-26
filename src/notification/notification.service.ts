@@ -102,44 +102,6 @@ export class NotificationService {
         'X-Entity-Ref-ID': `${Date.now()}`
       },
       html: `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <title>Your OTP Code</title>
-            </head>
-            <body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: Arial, sans-serif; color: #333;">
-              <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                <tr style="background-color: #AEC3B0;">
-                  <td style="padding: 20px; text-align: center; color: #ffffff;">
-                    <h1 style="margin: 0;">🔒 Verification Code</h1>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 30px;">
-                    <p style="font-size: 16px;">Hello,</p>
-                    <p style="font-size: 16px; line-height: 1.5;">
-                      Thank you for using our service. To complete your verification, please use the following One-Time Password (OTP):
-                    </p>
-                    <div style="text-align: center; margin: 30px 0;">
-                      <span style="display: inline-block; background-color: #AEC3B0; color: #ffffff; padding: 15px 30px; font-size: 24px; border-radius: 6px; letter-spacing: 3px;">
-                        ${otp}
-                      </span>
-                    </div>
-                    <p style="font-size: 14px; color: #555;">
-                      This OTP is valid for the next 10 minutes. If you did not request this, please ignore this email.
-                    </p>
-                    <p style="font-size: 16px;">Best regards,<br><strong>Street Noshery</strong></p>
-                  </td>
-                </tr>
-                <tr style="background-color: #f4f4f7;">
-                  <td style="padding: 20px; text-align: center; font-size: 12px; color: #888;">
-                    © 2025 Street Noshery. All rights reserved.
-                  </td>
-                </tr>
-              </table>
-            </body>
-            </html>
             `,
     };
 
@@ -169,7 +131,7 @@ export class NotificationService {
           service: 'gmail',
           from: 'streetnoshery@gmail.com',
           to: email,
-          subject: 'A Special Treat Awaits You at Street Noshery!',
+          subject: `🤤 Bhukh lagi hai? Toh chalo Street Noshery!`,
           text: ``,
           headers: {
             'Message-ID': `${crypto.randomUUID()}@streetnoshery.com`,
@@ -177,48 +139,98 @@ export class NotificationService {
           },
           html: `
           <!DOCTYPE html>
-          <html>
-            <head>
-              <meta charset="UTF-8">
-              <title>Welcome to Street Noshery</title>
-            </head>
-            <body style="margin:0; padding:0; background-color:#f4f4f7; font-family:Arial, sans-serif; color:#333;">
-              <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px; margin:auto; background-color:#ffffff; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); overflow:hidden;">
-                <tr style="background-color:#AEC3B0;">
-                  <td style="padding:20px; text-align:center; color:#ffffff;">
-                    <h1 style="margin:0;">Street Noshery</h1>
-                    <p style="margin:5px 0 0;">Comfort food with café vibes</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:30px;">
-                    <h2 style="color:#333;">🎁 Special Offer</h2>
-                    <p style="font-size:16px;">Get <strong>20% OFF</strong> on your first visit. Come hungry, leave happy!</p>
-                    <p style="font-size:16px;">Bring your friends and enjoy a flavorful time together.</p>
-                    <div style="text-align:center; margin:30px 0;">
-                      <a href="https://rb.gy/ls9pfs" target="_blank" style="display:inline-block; background-color:#AEC3B0; color:#ffffff; padding:15px 30px; font-size:18px; border-radius:6px; text-decoration:none;">
-                        📍 Find Us on Google Maps
-                      </a>
-                    </div>
-                    <p style="font-size:14px; color:#555;">
-                      📍 <strong>Shop No. 63</strong>, Sector 9 Shopping Centre, Madhyam Marg, Mansarovar, Jaipur – 302020<br>
-                      🗺️ <a href="https://rb.gy/ls9pfs" style="color:#AEC3B0;">Click for directions</a>
-                    </p>
-                    <p style="font-size:16px;">See you soon at <strong>Street Noshery</strong>!</p>
-                  </td>
-                </tr>
-                <tr style="background-color:#f4f4f7;">
-                  <td style="padding:20px; text-align:center; font-size:12px; color:#888;">
-                    You are receiving this email because you visited or interacted with Street Noshery.<br>
-                    <a href="mailto:streetnoshery@gmail.com?subject=Unsubscribe" style="color:#888;">Unsubscribe</a> if you no longer want emails from us.<br><br>
-                    © 2025 Street Noshery. All rights reserved.
-                  </td>
-                </tr>
-              </table>
-            </body>
-          </html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Welcome to Street Noshery</title>
+    <meta name="format-detection" content="telephone=no,address=no,email=no">
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f4f7; font-family:Arial, sans-serif; color:#333;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px; margin:auto; background-color:#ffffff; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); overflow:hidden;">
+      
+      <!-- Header -->
+      <tr style="background-color:#AEC3B0;">
+        <td style="padding:15px 0; text-align:center; color:#ffffff;">
+          <h1 style="margin:0; font-size:24px;">Street Noshery</h1>
+          <p style="margin:5px 0 0; font-size:15px;">Swad Ghar ka with Low Budget!</p>
+        </td>
+      </tr>
+
+      <!-- Main Content -->
+      <tr>
+        <td style="padding:0px 20px;">
+          <h3 style="color:#333;">🎁 Special Offer</h3>
+          <p style="font-size:14px;">Get <strong>10% OFF</strong> on your first visit. Come hungry!</p>
+          <p style="font-size:14px;">Bring your friends and enjoy a flavorful time together.</p>
+
+          <!-- Coupon Code -->
+          <div style="background-color:#f9f9f9; border:1px solid #AEC3B0; padding:15px; margin:25px 0; text-align:center; border-radius:6px;">
+            <p style="font-size:16px; margin:0 0 5px;">🍽️ Use Code: <strong style="color:#AEC3B0;">NOSH10</strong></p>
+            <p style="font-size:14px; color:#555; margin:5px 0 0;">Apply at checkout or show at the counter</p>
+          </div>
+
+          <!-- Swiggy and Zomato Links -->
+          <div style="text-align:center; margin:10px 0;">
+  <p style="font-size:16px; font-weight:bold; margin-bottom:10px;">🛵 Order Online</p>
+  
+  <a href="https://www.swiggy.com/menu/1150537?source=sharing" target="_blank" style="margin: 0 15px; text-decoration: none;">
+    <img src="https://images.yourstory.com/cs/images/companies/logosC141575978425306png?fm=auto&ar=1:1&mode=fill&fill=solid&fill-color=fff" alt="Swiggy" width="80" style="vertical-align: middle; border-radius: 8px;">
+  </a>
+
+  <a href="https://zomato.onelink.me/xqzv/tqd89dj6" target="_blank" style="margin: 0 15px; text-decoration: none;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Zomato_logo.png/600px-Zomato_logo.png" alt="Zomato" width="80" style="vertical-align: middle; border-radius: 8px;">
+  </a>
+</div>
+
+          <!-- Google Maps Button -->
+          <div style="text-align:center; margin:20px 0;">
+            <a href="https://rb.gy/ls9pfs" target="_blank" style="display:inline-block; background-color:#AEC3B0; color:#ffffff; padding:10px 30px; font-size:16px; border-radius:6px; text-decoration:none;">
+              📍 Find Us on Google Maps
+            </a>
+          </div>
+
+          <p style="font-size:14px;">See you soon at <strong>Street Noshery</strong>!</p>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <!-- Footer -->
+<tr style="background-color:#f4f4f7;">
+  <td style="padding: 20px; text-align: center; font-size: 12px; color: #888; font-family: Arial, sans-serif;">
+
+    You are receiving this email because you visited or interacted with Street Noshery.<br>
+    <a href="mailto:streetnoshery@gmail.com?subject=Unsubscribe" style="color:#888; text-decoration:none;">Unsubscribe</a> if you no longer want emails from us.<br><br>
+
+    <!-- Instagram and Phone in Same Row -->
+    <table align="center" style="margin: 0 auto;">
+      <tr>
+        <!-- Instagram -->
+        <td style="padding-right: 15px;">
+          <a href="https://www.instagram.com/street.noshery?igsh=eXdpcHBlczR1NjUw&utm_source=qr" target="_blank" style="text-decoration: none; color: #555;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" width="20" height="20" style="vertical-align: middle; border-radius: 4px;">
+            <span style="margin-left: 5px; font-size: 14px; vertical-align: middle;">@streetnoshery</span>
+          </a>
+        </td>
+
+        <!-- Phone -->
+        <td>
+          <span style="font-size: 14px; color: #555;">
+            📞 <a href="tel:+918107748619" style="color: #555; text-decoration: none;">+91 81077 48619</a>
+          </span>
+        </td>
+      </tr>
+    </table><br>
+
+    © 2025 Street Noshery. All rights reserved.
+  </td>
+</tr>
+
+
+    </table>
+  </body>
+</html>
           `
-        };              
+        };
 
         // Send email
         try {
