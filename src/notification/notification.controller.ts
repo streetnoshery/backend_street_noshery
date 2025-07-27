@@ -45,7 +45,12 @@ export class NotificationController {
     async sendMail(@Body() body: MailDto) {
         try {
             this.logger.log(`${prefix} (sendSMS) Initiating`);
-            const res = await this.smsService.sendPromotionalEmail(body);
+            const res = this.smsService.sendPromotionalEmail(body).then((res) => {
+                this.logger.log(`${prefix} (sendSMS) Successful || data: ${JSON.stringify(res)}`);
+            }).catch((error) => {
+                this.logger.error(`${prefix} (sendSMS) Error: ${JSON.stringify(error)}`);
+                throw error;
+            })
             this.logger.log(`${prefix} (sendSMS) Successful || data: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {

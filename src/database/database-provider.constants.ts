@@ -5,3 +5,4 @@ export const MENU = "MENU";
 export const ORDERS = "ORDERS";
 export const REVIEWS = "SHOP_REVIEWS";
 export const SHOPEMAILS = "SHOP_EMAILS";
+export const EMAILS = "EMAILS"
