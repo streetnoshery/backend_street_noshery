@@ -44,17 +44,17 @@ export class NotificationController {
     @Post("send-mail")
     async sendMail(@Body() body: MailDto) {
         try {
-            this.logger.log(`${prefix} (sendSMS) Initiating`);
+            this.logger.log(`${prefix} (sendMail) Initiating`);
             const res = this.smsService.sendPromotionalEmail(body).then((res) => {
-                this.logger.log(`${prefix} (sendSMS) Successful || data: ${JSON.stringify(res)}`);
+                this.logger.log(`${prefix} (sendMail) Successful || data: ${JSON.stringify(res)}`);
             }).catch((error) => {
-                this.logger.error(`${prefix} (sendSMS) Error: ${JSON.stringify(error)}`);
+                this.logger.error(`${prefix} (sendMail) Error: ${JSON.stringify(error)}`);
                 throw error;
             })
-            this.logger.log(`${prefix} (sendSMS) Successful || data: ${JSON.stringify(res)}`);
+            this.logger.log(`${prefix} (sendMail) Successful || data: ${JSON.stringify(res)}`);
             return res;
         } catch (error) {
-            this.logger.error(`${prefix} (sendSMS) Error: ${JSON.stringify(error)}`);
+            this.logger.error(`${prefix} (sendMail) Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
