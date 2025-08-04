@@ -381,7 +381,7 @@ export class NotificationService {
       // Email options
       const mailOptions = {
         service: 'gmail',
-        from: 'streetnoshery@gmail.com',
+        from: '"Your order is on the way" streetnoshery@gmail.com',
         to: email,
         subject: `🤤 Bhukh lagi hai? Toh chalo Street Noshery!`,
         text: ``,
