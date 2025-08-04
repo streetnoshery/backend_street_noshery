@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Street Noshery</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        .wrapper {
+            background: #e6f4ea;
+            /* soft light green */
+            width: 300px;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 20px auto 20px;
+            color: #000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .cafe-name {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 0 0;
+        }
+
+        .image-container {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0px;
+        }
+
+        .cafe-image {
+            width: 100%;
+            display: block;
+            transition: transform 0.2s ease-out;
+        }
+
+        .timing-overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 8px 0;
+        }
+
+        .footer-table {
+            background-color: #f4f4f7;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a {
+            color: #555;
+            text-decoration: none;
+        }
+
+        /* 🌙 Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .wrapper {
+                background-color: #1e3025;
+                /* dark greenish */
+                color: #f5f5f5;
+                box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cafe-image {
+                transition: transform 0.3s ease-out, filter 0.3s ease-out;
+                will-change: transform, filter;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+        <div class="header-row">
+            <div class="cafe-name">Welcome to Street Noshery!</div>
+        </div>
+
+        <div class="image-container">
+            <img class="cafe-image" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5" alt="Fruit Bowl">
+            <div class="timing-overlay">🕒 Open Daily: 09:00 AM – 10:30 PM</div>
+        </div>
+
+        <h3 style="color:#333;">🎁 Special Offer</h3>
+        <p style="font-size:12px;">Get <strong>20% OFF</strong> on your first visit. Come hungry!</p>
+        <p style="font-size:12px;">Bring your friends and enjoy a flavorful time together.</p>
+
+        <div
+            style="background-color:#f9f9f9; border:1px solid #AEC3B0; padding:10px; margin:15px 0; text-align:center; border-radius:6px;">
+            <p style="font-size:14px; margin:0 0 5px;">🍽️ Use Code: <strong
+                    style="color:#AEC3B0;">{{promotionalCode}}</strong></p>
+            <p style="font-size:12px; color:#555; margin:5px 0 0;">Apply at checkout or show at the counter</p>
+        </div>
+
+        <div style="text-align:center; margin:0px 0;">
+            <p style="font-size:14px; font-weight:bold; margin-bottom:10px;">🛵 Order Online</p>
+
+            <a href="https://www.swiggy.com/menu/1150537?source=sharing" target="_blank" style="margin: 0 10px;">
+                <img src="https://images.yourstory.com/cs/images/companies/logosC141575978425306png?fm=auto&ar=1:1&mode=fill&fill=solid&fill-color=fff"
+                    alt="Swiggy" width="50" style="border-radius: 6px;">
+            </a>
+
+
+            <a href="https://zomato.onelink.me/xqzv/tqd89dj6" target="_blank" style="margin: 0 10px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Zomato_logo.png/600px-Zomato_logo.png"
+                    alt="Zomato" width="50" style="border-radius: 6px;">
+            </a>
+
+        </div>
+
+        <div style="text-align:center; margin:10px 0;">
+            <a href="https://rb.gy/ls9pfs" target="_blank"
+                style="display:inline-block; background-color:#AEC3B0; color:#ffffff; padding:10px 30px; font-size:16px; border-radius:6px;">
+                📍 Find Us on Google Maps
+            </a>
+        </div>
+
+        <p style="font-size:12px;">See you soon at <strong>Street Noshery</strong>!</p>
+
+        <div class="footer-table">
+            <p>You are receiving this email because you visited or interacted with Street Noshery.</p>
+            <a href="mailto:streetnoshery@gmail.com?subject=Unsubscribe"
+                style="color: #007bff; text-decoration: underline;">
+                Unsubscribe
+            </a> if you no longer want emails from us.<br><br>
+
+
+            <!-- Instagram and Phone in Same Row -->
+            <table align="center" style="margin: 0 auto;">
+                <tr>
+                    <!-- Instagram -->
+                    <td style="padding-right: 15px;">
+                        <a href="https://www.instagram.com/street.noshery?igsh=eXdpcHBlczR1NjUw&utm_source=qr"
+                            target="_blank" style="text-decoration: none; color: #555;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+                                alt="Instagram" width="20" height="20"
+                                style="vertical-align: middle; border-radius: 4px;">
+                            <span
+                                style="margin-left: 5px; font-size: 14px; vertical-align: middle;">@streetnoshery</span>
+                        </a>
+                    </td>
+
+                    <!-- Phone -->
+                    <td>
+                        <span style="font-size: 12px; color: #555;">
+                            📞 <a href="tel:+918107748619" style="color: #555; text-decoration: none;">+91 81077
+                                48619</a>
+                        </span>
+                    </td>
+                </tr>
+            </table><br>
+
+            © 2025 Street Noshery. All rights reserved.
+        </div>
+
+    </div>
+
+    <!-- Parallax JS effect for friction scroll on image -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const image = document.querySelector('.cafe-image');
+
+            if (!image) return;
+
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+
+                // Only animate if on mobile
+                if (window.innerWidth <= 600) {
+                    const translateY = scrollY * 0.1;
+                    const scale = 1 + scrollY * 0.0003;
+                    const brightness = 1 - scrollY * 0.0003;
+
+                    image.style.transform = `translateY(${translateY}px) scale(${scale})`;
+                    image.style.filter = `brightness(${Math.max(brightness, 0.85)})`;
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
