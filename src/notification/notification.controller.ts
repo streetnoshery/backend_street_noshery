@@ -58,4 +58,22 @@ export class NotificationController {
             throw error;
         }
     }
+
+    @Post("send-mail-resend")
+    async sendResendMail(@Body() body: MailDto) {
+        try {
+            this.logger.log(`${prefix} (sendResendMail) Initiating`);
+            const res = this.smsService.sendEmailViaResend(body).then((res) => {
+                this.logger.log(`${prefix} (sendResendMail) Successful || data: ${JSON.stringify(res)}`);
+            }).catch((error) => {
+                this.logger.error(`${prefix} (sendResendMail) Error: ${JSON.stringify(error)}`);
+                throw error;
+            })
+            this.logger.log(`${prefix} (sendResendMail) Successful || data: ${JSON.stringify(res)}`);
+            return res;
+        } catch (error) {
+            this.logger.error(`${prefix} (sendResendMail) Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
 }

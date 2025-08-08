@@ -26,7 +26,7 @@ function formatErrorText(err: any): string {
   return errText
 }
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3020;
 const globalPrefix = process.env.GLOBAL_PREFIX || "street-noshery"
 
 async function bootstrap() {

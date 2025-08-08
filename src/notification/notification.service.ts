@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail')
 import * as fs from 'fs';
 import * as path from 'path';
+import { Resend } from 'resend';
 
 @Injectable()
 export class NotificationService {
@@ -116,26 +117,6 @@ export class NotificationService {
       this.logger.log('Email sent: ', info.response);
     } catch (error) {
       this.logger.error('Error sending email: ', error);
-    }
-  }
-
-  async sendPromotionalEmail(emails: MailDto) {
-    try {
-      // Create transporter
-      const transporter = nodemailer.createTransport({
-        service: 'gmail', // or your service like 'outlook', 'yahoo', etc.
-        auth: {
-          user: process.env.EMAIL_USR,
-          pass: process.env.EMAIL_PASS, // Not your normal password. Use App Passwords.
-        },
-      });
-      this.logger.log(`[NOTIFICATION_LISTNER_SERVICE] (sendPromotionalEmail) Sending email to users`)
-
-      this.sendPromotionalEmailCoupons(emails, transporter);
-
-      return true
-    } catch (error) {
-      throw error;
     }
   }
 
@@ -359,165 +340,6 @@ export class NotificationService {
     }
   }
 
-  async sendPromotionalEmailCoupons(emails: MailDto, transporter: any) {
-    for (var userEmail of emails.emails) {
-
-      const { mobile, email } = userEmail;
-      const promotionalCode = "NOSH20"
-
-      const emailUserDB = await this.emailModelHelperService.getUserEmail({ email });
-      if (emailUserDB?.promotionalCode == promotionalCode) {
-        this.logger.log(`Already sent email for emailID: ${email}`)
-        continue;
-      }
-
-      let htmlContent = fs.readFileSync(
-        path.join(__dirname, '..', '..', 'src', 'notification', 'notification-html.html'),
-        'utf-8'
-      );
-      
-      // Replace placeholder with actual code
-      htmlContent = htmlContent.replace('{{promotionalCode}}', promotionalCode);
-      // Email options
-      const mailOptions = {
-        service: 'gmail',
-        from: '"Your order is on the way" streetnoshery@gmail.com',
-        to: email,
-        subject: `🤤 Bhukh lagi hai? Toh chalo Street Noshery!`,
-        text: ``,
-        headers: {
-          'Message-ID': `${crypto.randomUUID()}@streetnoshery.com`,
-          'X-Entity-Ref-ID': `${Date.now()}`
-        },
-        html: htmlContent
-      };
-
-      //       <!DOCTYPE html>
-      // <html>
-      //   <head>
-      //     <meta charset="UTF-8" />
-      //     <title>Street Noshery Offer</title>
-      //     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      //     <style>
-      //       body {
-      //         margin: 0;
-      //         padding: 0;
-      //         background-color: #f0f0f0;
-      //         font-family: Arial, sans-serif;
-      //       }
-
-      //       .card-container {
-      //         max-width: 600px;
-      //         margin: auto;
-      //         border-radius: 16px;
-      //         overflow: hidden;
-      //         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      //         background-color: #ffffff;
-      //         position: relative;
-      //       }
-
-      //       .top-info {
-      //         position: absolute;
-      //         top: 15px;
-      //         left: 15px;
-      //         background-color: #aec3b0;
-      //         padding: 8px 12px;
-      //         border-radius: 12px;
-      //         display: flex;
-      //         align-items: center;
-      //         z-index: 3;
-      //       }
-
-      //       .top-info img {
-      //         width: 28px;
-      //         height: 28px;
-      //         margin-right: 8px;
-      //       }
-
-      //       .top-info-text {
-      //         font-size: 13px;
-      //         line-height: 1.2;
-      //         color: #333;
-      //       }
-
-      //       .top-info-text strong {
-      //         font-weight: bold;
-      //         font-size: 14px;
-      //         display: block;
-      //       }
-
-      //       .content {
-      //         padding: 80px 20px 20px 20px;
-      //         text-align: center;
-      //       }
-
-      //       h1 {
-      //         color: #333;
-      //         font-size: 24px;
-      //         margin-bottom: 10px;
-      //       }
-
-      //       p {
-      //         color: #666;
-      //         font-size: 16px;
-      //         margin-bottom: 20px;
-      //       }
-
-      //       .button {
-      //         display: inline-block;
-      //         padding: 12px 24px;
-      //         background-color: #63a375;
-      //         color: #ffffff;
-      //         text-decoration: none;
-      //         border-radius: 8px;
-      //         font-weight: bold;
-      //         font-size: 16px;
-      //         transition: background-color 0.3s ease;
-      //       }
-
-      //       .button:hover {
-      //         background-color: #4e8f61;
-      //       }
-      //     </style>
-      //   </head>
-      //   <body>
-      //     <div class="card-container">
-      //       <!-- Top Left Logo and Text -->
-      //       <div class="top-info">
-      //         <img
-      //           src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
-      //           alt="Instagram"
-      //         />
-      //         <div class="top-info-text">
-      //           <strong>Street Noshery</strong>
-      //           Swad Ghar Ka with Low Budget
-      //         </div>
-      //       </div>
-
-      //       <!-- Main Content -->
-      //       <div class="content">
-      //         <h1>Get 20% Off Your First Order!</h1>
-      //         <p>Try the best homemade flavors today. Order online and enjoy the taste of home.</p>
-      //         <a href="https://streetnoshery.com" class="button">Order Now</a>
-      //       </div>
-      //     </div>
-      //   </body>
-      // </html>
-
-
-      // Send email
-      try {
-        this.logger.log(`Sending email for emailId: ${email}`)
-        const info = await transporter.sendMail(mailOptions);
-        const updatedEmail = await this.emailModelHelperService.createUserEmail({ email, mobileNumbers: mobile, promotionalCode });
-        this.logger.log(`updated email: ${JSON.stringify(updatedEmail)}`)
-        this.logger.log('Email sent: ', info.response);
-      } catch (error) {
-        this.logger.error(`Error sending email for emailId: ${email} | Error: ${JSON.stringify(error)} `);
-      }
-    }
-  }
-
   async sendEmailViaAWS(otp?: string) {
     // Configure AWS SES client
     const ses = new SESClient({
@@ -564,6 +386,144 @@ export class NotificationService {
       this.logger.log("Email sent successfully!", result);
     } catch (error) {
       this.logger.error('Error sending email:', error);
+    }
+  }
+
+  async sendPromotionalEmail(emails: MailDto) {
+    try {
+      // Create transporter
+      const transporter = nodemailer.createTransport({
+        service: 'gmail', // or your service like 'outlook', 'yahoo', etc.
+        auth: {
+          user: "streetnoshery@gmail.com",
+          pass: "llib whtx lzyn btfh", // Not your normal password. Use App Passwords.
+        },
+      });
+      this.logger.log(`[NOTIFICATION_LISTNER_SERVICE] (sendPromotionalEmail) Sending email to users`)
+
+      this.sendPromotionalEmailCoupons(emails, transporter);
+
+      return true
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async sendPromotionalEmailCoupons(emails: MailDto, transporter: any) {
+    for (var userEmail of emails.emails) {
+
+      const { mobile, email } = userEmail;
+      const promotionalCode = "NOSH20"
+
+      const emailUserDB = await this.emailModelHelperService.getUserEmail({ email });
+      if (emailUserDB?.promotionalCode == promotionalCode) {
+        this.logger.log(`Already sent email for emailID: ${email}`)
+        continue;
+      }
+
+      let htmlContent = fs.readFileSync(
+        path.join(__dirname, '..', '..', 'src', 'notification', 'notification-html.html'),
+        'utf-8'
+      );
+
+      // Replace placeholder with actual code
+      htmlContent = htmlContent.replace('{{promotionalCode}}', promotionalCode);
+      // Email options
+      const mailOptions = {
+        from: 'streetnoshery@gmail.com',
+        to: email,
+        subject: `🤤 Bhukh lagi hai? Toh chalo Street Noshery!`,
+        headers: {
+          'Message-ID': `${crypto.randomUUID()}@streetnoshery.com`,
+          'X-Entity-Ref-ID': `${Date.now()}`
+        },
+        html: htmlContent
+      };
+      // Send email
+      try {
+        this.logger.log(`Sending email for emailId: ${email}`)
+        const info = await transporter.sendMail(mailOptions);
+        const updatedEmail = await this.emailModelHelperService.createUserEmail({ email, mobileNumbers: mobile, promotionalCode });
+        this.logger.log(`updated email: ${JSON.stringify(updatedEmail)}`)
+        this.logger.log('Email sent: ', info);
+      } catch (error) {
+        this.logger.error(`Error sending email for emailId: ${email} | Error: ${JSON.stringify(error)} `);
+      }
+    }
+  }
+
+  async sendEmailViaResend(emails: MailDto) {
+    try {
+
+      const resend = new Resend(process.env.RESEND_API_KEY); // Found in Dashboard > API Keys
+      this.logger.log(`[NOTIFICATION_LISTNER_SERVICE] (sendEmailViaResend) Sending email to users`);
+
+      this.sendEmailsViaResend(emails, resend);
+
+    } catch (error) {
+      console.error('Email failed:', error);
+      throw error;
+    }
+  }
+
+  async sendEmailsViaResend(emails: MailDto, resend: any) {
+    const emailsToSend = emails.emails;
+    const CHUNK_SIZE = 2; // max emails per second
+    for (let i = 0; i < emailsToSend.length; i += CHUNK_SIZE) {
+      const chunk = emailsToSend.slice(i, i + CHUNK_SIZE);
+
+      const {email} = emailsToSend[i]
+      const promotionalCode = "NOSH20"
+
+      const emailUserDB = await this.emailModelHelperService.getUserEmail({ email });
+      if (emailUserDB?.promotionalCode == promotionalCode) {
+        this.logger.log(`Already sent email for emailID: ${email}`)
+        continue;
+      }
+
+      let htmlContent = fs.readFileSync(
+        path.join(__dirname, '..', '..', 'src', 'notification', 'notification-html.html'),
+        'utf-8'
+      );
+
+      // Replace placeholder with actual code
+      htmlContent = htmlContent.replace('{{promotionalCode}}', promotionalCode);
+
+      await Promise.all(
+        chunk.map(async (email) => {
+          try {
+            this.logger.log(`Sending email for emailId: ${JSON.stringify(email)}`);
+
+            const mailOptions = {
+              from: `Your order is on the way <info@streetnoshery.com>`,
+              to: email.email,
+              subject: `🍔 Bhukh lagi hai? Toh chalo Street Noshery!`,
+              headers: {
+                'X-Entity-Ref-ID': `${Date.now()}`
+              },
+              html: htmlContent
+            };
+            const info = await resend.emails.send(mailOptions);
+
+            if (info && info.data && info.data.id) {
+              const updatedEmail = await this.emailModelHelperService.createUserEmail({
+                email: email.email,
+                mobileNumbers: email.mobile, // adjust if mobile is per user
+                promotionalCode,
+              });
+              this.logger.log(`updated email: ${JSON.stringify(updatedEmail)}`);
+              this.logger.log(`Email sent successfully: ${JSON.stringify(info)}`);
+            } else {
+              this.logger.error(`Failed to send email: ${JSON.stringify(info)}`);
+            }
+          } catch (error) {
+            this.logger.error(`Error sending email for emailId: ${email} | Error: ${JSON.stringify(error)} `);
+          }
+        })
+      );
+
+      // ⏱ Wait 1 second before next 2 emails
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
 }
