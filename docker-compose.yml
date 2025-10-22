@@ -1,0 +1,172 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Kong
+  kong-database:
+    image: postgres:15-alpine
+    container_name: kong-database
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+      POSTGRES_DB: kong
+    volumes:
+      - kong_data:/var/lib/postgresql/data
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kong"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kong Database Migration
+  kong-migration:
+    image: kong:3.4
+    container_name: kong-migration
+    command: kong migrations bootstrap
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: kong
+    depends_on:
+      kong-database:
+        condition: service_healthy
+    networks:
+      - kong-network
+    restart: "no"
+
+  # Kong API Gateway
+  kong:
+    image: kong:3.4
+    container_name: kong-gateway
+    environment:
+      KONG_DATABASE: off
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_ADMIN_GUI_URL: http://localhost:8002
+      KONG_ADMIN_GUI_LISTEN: 0.0.0.0:8002
+      KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+    volumes:
+      - ./kong.yml:/kong/declarative/kong.yml:ro
+    ports:
+      - "8000:8000"  # Kong Proxy
+      - "8001:8001"  # Kong Admin API
+      - "8002:8002"  # Kong Manager (GUI)
+    depends_on:
+      kong-migration:
+        condition: service_completed_successfully
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  # NestJS Backend Service - Instance 1
+  backend-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: street-noshery-backend-1
+    ports:
+      - "3020:3020"
+    environment:
+      - NODE_ENV=production
+      - PORT=3020
+      - GLOBAL_PREFIX=street-noshery
+      - INSTANCE_ID=backend-1
+      - MONGO_URL=mongodb+srv://streetnoshery:Sumit%40Godwan%401062@streetnoshery.g7ufm.mongodb.net/street_noshery?retryWrites=true&w=majority
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3020/street-noshery/customer"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # NestJS Backend Service - Instance 2
+  backend-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: street-noshery-backend-2
+    ports:
+      - "3021:3020"
+    environment:
+      - NODE_ENV=production
+      - PORT=3020
+      - GLOBAL_PREFIX=street-noshery
+      - INSTANCE_ID=backend-2
+      - MONGO_URL=mongodb+srv://streetnoshery:Sumit%40Godwan%401062@streetnoshery.g7ufm.mongodb.net/street_noshery?retryWrites=true&w=majority
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3020/street-noshery/customer"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # NestJS Backend Service - Instance 3
+  backend-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: street-noshery-backend-3
+    ports:
+      - "3022:3020"
+    environment:
+      - NODE_ENV=production
+      - PORT=3020
+      - GLOBAL_PREFIX=street-noshery
+      - INSTANCE_ID=backend-3
+      - MONGO_URL=mongodb+srv://streetnoshery:Sumit%40Godwan%401062@streetnoshery.g7ufm.mongodb.net/street_noshery?retryWrites=true&w=majority
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3020/street-noshery/customer"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Konga - Kong Admin GUI (Optional)
+  konga:
+    image: pantsel/konga:latest
+    container_name: konga
+    environment:
+      NODE_ENV: production
+      KONGA_HOOK_TIMEOUT: 120000
+    ports:
+      - "1337:1337"
+    depends_on:
+      - kong
+    networks:
+      - kong-network
+    restart: unless-stopped
+
+# Named volumes for data persistence
+volumes:
+  kong_data:
+    driver: local
+
+# Custom network for service communication
+networks:
+  kong-network:
+    driver: bridge

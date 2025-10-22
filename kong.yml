@@ -1,0 +1,215 @@
+_format_version: "3.0"
+
+# Upstreams for load balancing
+upstreams:
+  - name: street-noshery-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /street-noshery/customer
+        timeout: 1
+        concurrency: 10
+        healthy:
+          interval: 0
+          successes: 0
+        unhealthy:
+          interval: 0
+          http_failures: 0
+          tcp_failures: 0
+          timeouts: 0
+    targets:
+      - target: street-noshery-backend-1:3020
+        weight: 100
+      - target: street-noshery-backend-2:3020
+        weight: 100
+      - target: street-noshery-backend-3:3020
+        weight: 100
+
+# Services configuration
+services:
+  # Main Street Noshery Backend Service
+  - name: street-noshery-backend
+    host: street-noshery-upstream
+    port: 3020
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    retries: 5
+    
+    routes:
+      # Main API route
+      - name: street-noshery-main-route
+        paths:
+          - /street-noshery
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+          - OPTIONS
+        preserve_host: false
+        
+      # Health check route (no auth required)
+      - name: street-noshery-health-route
+        paths:
+          - /health
+        strip_path: false
+        methods:
+          - GET
+        preserve_host: false
+        
+      # Public routes (no auth required)
+      - name: street-noshery-public-route
+        paths:
+          - /street-noshery/auth/login
+          - /street-noshery/auth/register
+          - /street-noshery/auth/forgot-password
+          - /street-noshery/menu/public
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - OPTIONS
+        preserve_host: false
+    
+    plugins:
+      # CORS configuration
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - PATCH
+            - OPTIONS
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - X-Auth-Token
+            - Authorization
+            - apikey
+            - x-api-key
+          exposed_headers:
+            - X-Auth-Token
+            - X-Response-Time
+          credentials: true
+          max_age: 3600
+          preflight_continue: false
+          
+      # Rate limiting
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 1000
+          day: 10000
+          policy: local
+          fault_tolerant: true
+          hide_client_headers: false
+          
+      # Request transformation
+      - name: request-transformer
+        config:
+          add:
+            headers:
+              - "X-Forwarded-Proto:https"
+              - "X-Forwarded-Host:$(host)"
+              - "X-Kong-Request-ID:$(uuid)"
+          remove:
+            headers: []
+          replace:
+            headers: []
+          append:
+            headers: []
+            
+      # Response transformation
+      - name: response-transformer
+        config:
+          add:
+            headers:
+              - "X-Response-Time:$(latency)"
+              - "X-Kong-Upstream-Latency:$(upstream_latency)"
+          remove:
+            headers: []
+          replace:
+            headers: []
+          append:
+            headers: []
+
+# Consumers (API clients)
+consumers:
+  - username: street-noshery-web-client
+    custom_id: web-client-001
+    tags:
+      - web
+      - frontend
+    keyauth_credentials:
+      - key: web-api-key-12345
+        tags:
+          - web
+          
+  - username: street-noshery-mobile-client
+    custom_id: mobile-client-001
+    tags:
+      - mobile
+      - app
+    keyauth_credentials:
+      - key: mobile-api-key-67890
+        tags:
+          - mobile
+          
+  - username: street-noshery-admin-client
+    custom_id: admin-client-001
+    tags:
+      - admin
+      - backend
+    keyauth_credentials:
+      - key: admin-api-key-11111
+        tags:
+          - admin
+
+# Global plugins
+plugins:
+  # Key authentication (applied globally)
+  - name: key-auth
+    config:
+      key_names:
+        - apikey
+        - x-api-key
+      key_in_header: true
+      key_in_query: true
+      key_in_body: false
+      hide_credentials: false
+      anonymous: null
+      
+  # Request ID plugin
+  - name: correlation-id
+    config:
+      header_name: Kong-Request-ID
+      echo_downstream: true
+      generator: uuid#counter
+      
+  # Prometheus metrics
+  - name: prometheus
+    config:
+      per_consumer: true
+      status_code_metrics: true
+      latency_metrics: true
+      bandwidth_metrics: true
+      upstream_health_metrics: true
+      
+  # Request/Response logging
+  - name: file-log
+    config:
+      path: /tmp/kong-access.log
+      reopen: true
+
