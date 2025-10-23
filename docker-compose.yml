@@ -146,6 +146,83 @@ services:
       retries: 3
       start_period: 40s
 
+  # Additional Backend Instances for Auto-Scaling (4-6)
+  # These will be started dynamically by the auto-scaling script
+  backend-4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: street-noshery-backend-4
+    ports:
+      - "3023:3020"
+    environment:
+      - NODE_ENV=production
+      - PORT=3020
+      - GLOBAL_PREFIX=street-noshery
+      - INSTANCE_ID=backend-4
+      - MONGO_URL=mongodb+srv://streetnoshery:Sumit%40Godwan%401062@streetnoshery.g7ufm.mongodb.net/street_noshery?retryWrites=true&w=majority
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3020/street-noshery/customer"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - scaling
+
+  backend-5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: street-noshery-backend-5
+    ports:
+      - "3024:3020"
+    environment:
+      - NODE_ENV=production
+      - PORT=3020
+      - GLOBAL_PREFIX=street-noshery
+      - INSTANCE_ID=backend-5
+      - MONGO_URL=mongodb+srv://streetnoshery:Sumit%40Godwan%401062@streetnoshery.g7ufm.mongodb.net/street_noshery?retryWrites=true&w=majority
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3020/street-noshery/customer"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - scaling
+
+  backend-6:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: street-noshery-backend-6
+    ports:
+      - "3025:3020"
+    environment:
+      - NODE_ENV=production
+      - PORT=3020
+      - GLOBAL_PREFIX=street-noshery
+      - INSTANCE_ID=backend-6
+      - MONGO_URL=mongodb+srv://streetnoshery:Sumit%40Godwan%401062@streetnoshery.g7ufm.mongodb.net/street_noshery?retryWrites=true&w=majority
+    networks:
+      - kong-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3020/street-noshery/customer"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - scaling
+
   # Konga - Kong Admin GUI (Optional)
   konga:
     image: pantsel/konga:latest

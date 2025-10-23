@@ -25,6 +25,13 @@ upstreams:
         weight: 100
       - target: street-noshery-backend-3:3020
         weight: 100
+      # Additional targets will be added dynamically by auto-scaling script
+      # - target: street-noshery-backend-4:3020
+      #   weight: 100
+      # - target: street-noshery-backend-5:3020
+      #   weight: 100
+      # - target: street-noshery-backend-6:3020
+      #   weight: 100
 
 # Services configuration
 services:
