@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { StreetNosheryCustomerModule } from './customer/customer.module';
@@ -13,6 +13,7 @@ import { StreetNosheryReviewModule } from './review/review.module';
 import { NotificationModule } from './notification/notification.module';
 import { LoggerModule } from './logger/logger.module';
 import { StreetNosheryEmailModelModule } from './notification/model/email-model.module';
+import { RateLimitMiddleware } from './common/ratelimitter.middleware';
 
 @Module({
   imports: [
@@ -35,4 +36,10 @@ import { StreetNosheryEmailModelModule } from './notification/model/email-model.
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(RateLimitMiddleware)
+      .forRoutes('*'); // Apply globally to all routes
+  }
+}

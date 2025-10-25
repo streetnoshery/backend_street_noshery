@@ -12,6 +12,7 @@ import mongoose from 'mongoose';
 // import { StreetNosheryRequestInterceptor } from './common/decryption.interseptor';
 const { initializeFirebaseApp } = require("./common/firebase/firebase_utils");
 import * as express from 'express';
+import { RateLimitMiddleware } from './common/ratelimitter.middleware';
 
 
 
@@ -44,7 +45,6 @@ async function bootstrap() {
 
   app.use(express.json()); // ✅ Parse application/json
   app.use(express.urlencoded({ extended: true }));
-
   app.use((req, res, next) => {
     console.log('Request Body:', req.body);
     next();
